@@ -10,7 +10,7 @@ LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.name="Node Image" \
       org.label-schema.description="Panascais Node Image" \
-      org.label-schema.vendor="Panascais Inc." \
+      org.label-schema.vendor="Panascais, Inc." \
       org.label-schema.schema-version="1.0.0-rc1" \
       maintainer="Panascais Open Source <oss@panascais.net>"
 
