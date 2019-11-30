@@ -30,3 +30,129 @@ jobs:
         docker push panascais-docker/node:8
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+  node_10:
+    name: Node 10
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Build the docker container image
+      working-directory: ./10
+      run: |
+        docker build -t panascais/node:10 .
+        docker tag panascais/node:10 docker.pkg.github.com/panascais-docker/node:10
+
+    - name: Push the image to the GitHub Registry
+      run: |
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
+        docker push docker.pkg.github.com/panascais-docker/node:10
+      env:
+        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
+
+    - name: Push the image to the Docker Registry
+      run: |
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
+        docker push panascais-docker/node:10
+      env:
+        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+  node_11:
+    name: Node 11
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Build the docker container image
+      working-directory: ./11
+      run: |
+        docker build -t panascais/node:11 .
+        docker tag panascais/node:11 docker.pkg.github.com/panascais-docker/node:11
+
+    - name: Push the image to the GitHub Registry
+      run: |
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
+        docker push docker.pkg.github.com/panascais-docker/node:11
+      env:
+        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
+
+    - name: Push the image to the Docker Registry
+      run: |
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
+        docker push panascais-docker/node:11
+      env:
+        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+  node_12:
+    name: Node 12
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Build the docker container image
+      working-directory: ./12
+      run: |
+        docker build -t panascais/node:12 .
+        docker tag panascais/node:12 docker.pkg.github.com/panascais-docker/node:12
+
+    - name: Push the image to the GitHub Registry
+      run: |
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
+        docker push docker.pkg.github.com/panascais-docker/node:12
+      env:
+        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
+
+    - name: Push the image to the Docker Registry
+      run: |
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
+        docker push panascais-docker/node:12
+      env:
+        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+  node_13:
+    name: Node 13
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Build the docker container image
+      working-directory: ./13
+      run: |
+        docker build -t panascais/node:13 .
+        docker tag panascais/node:13 docker.pkg.github.com/panascais-docker/node:8
+
+    - name: Push the image to the GitHub Registry
+      run: |
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
+        docker push docker.pkg.github.com/panascais-docker/node:13
+      env:
+        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
+
+    - name: Push the image to the Docker Registry
+      run: |
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
+        docker push panascais-docker/node:13
+      env:
+        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+  node_latest:
+    name: Node latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Build the docker container image
+      working-directory: ./13
+      run: |
+        docker build -t panascais/node:latest .
+        docker tag panascais/node:latest docker.pkg.github.com/panascais-docker/node:latest
+
+    - name: Push the image to the GitHub Registry
+      run: |
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
+        docker push docker.pkg.github.com/panascais-docker/node:latest
+      env:
+        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
+
+    - name: Push the image to the Docker Registry
+      run: |
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
+        docker push panascais-docker/node:latest
+      env:
+        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+
