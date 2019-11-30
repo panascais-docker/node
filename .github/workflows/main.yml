@@ -5,7 +5,7 @@ on:
     - master
 
 jobs:
-  node:8:
+  node_8:
     name: Node 8
     runs-on: ubuntu-latest
     steps:
