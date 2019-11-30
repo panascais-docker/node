@@ -5,8 +5,8 @@ on:
     - master
 
 jobs:
-  build:8:
-    name: build:8
+  node:8:
+    name: Node 8
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
