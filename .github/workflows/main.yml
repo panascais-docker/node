@@ -6,7 +6,7 @@ on:
 
 jobs:
   node_8:
-    name: Node 8
+    name: 8
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -31,7 +31,7 @@ jobs:
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_10:
-    name: Node 10
+    name: 10
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -56,7 +56,7 @@ jobs:
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_11:
-    name: Node 11
+    name: 11
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -81,7 +81,7 @@ jobs:
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_12:
-    name: Node 12
+    name: 12
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -106,7 +106,7 @@ jobs:
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_13:
-    name: Node 13
+    name: 13
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -131,7 +131,7 @@ jobs:
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_latest:
-    name: Node latest
+    name: latest
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
