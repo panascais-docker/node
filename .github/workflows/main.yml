@@ -27,7 +27,7 @@ jobs:
     - name: Push the image to the Docker Registry
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais-docker/node:8
+        docker push panascais/node:8
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_10:
@@ -52,7 +52,7 @@ jobs:
     - name: Push the image to the Docker Registry
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais-docker/node:10
+        docker push panascais/node:10
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_11:
@@ -77,7 +77,7 @@ jobs:
     - name: Push the image to the Docker Registry
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais-docker/node:11
+        docker push panascais/node:11
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_12:
@@ -102,7 +102,7 @@ jobs:
     - name: Push the image to the Docker Registry
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais-docker/node:12
+        docker push panascais/node:12
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_13:
@@ -127,7 +127,7 @@ jobs:
     - name: Push the image to the Docker Registry
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais-docker/node:13
+        docker push panascais/node:13
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
   node_latest:
@@ -152,7 +152,7 @@ jobs:
     - name: Push the image to the Docker Registry
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais-docker/node:latest
+        docker push panascais/node:latest
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
