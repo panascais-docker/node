@@ -19,14 +19,14 @@ jobs:
 
     - name: Push the image to the GitHub Registry
       run: |
-        docker login docker.pkg.github.com --username publisher --password "${GITHUB_PACKAGE_REGISTRY_TOKEN}"
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
         docker push docker.pkg.github.com/panascais-docker/node/main:8
       env:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
 
     - name: Push the image to the Docker Registry
       run: |
-        docker login --username panascaisci --password "${DOCKER_REGISTRY_TOKEN}"
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
         docker push panascais-docker/node:8
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
@@ -44,14 +44,14 @@ jobs:
 
     - name: Push the image to the GitHub Registry
       run: |
-        docker login docker.pkg.github.com --username publisher --password "${GITHUB_PACKAGE_REGISTRY_TOKEN}"
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
         docker push docker.pkg.github.com/panascais-docker/node/main:10
       env:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
 
     - name: Push the image to the Docker Registry
       run: |
-        docker login --username panascaisci --password "${DOCKER_REGISTRY_TOKEN}"
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
         docker push panascais-docker/node:10
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
@@ -69,14 +69,14 @@ jobs:
 
     - name: Push the image to the GitHub Registry
       run: |
-        docker login docker.pkg.github.com --username publisher --password "${GITHUB_PACKAGE_REGISTRY_TOKEN}"
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
         docker push docker.pkg.github.com/panascais-docker/node/main:11
       env:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
 
     - name: Push the image to the Docker Registry
       run: |
-        docker login --username panascaisci --password "${DOCKER_REGISTRY_TOKEN}"
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
         docker push panascais-docker/node:11
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
@@ -94,14 +94,14 @@ jobs:
 
     - name: Push the image to the GitHub Registry
       run: |
-        docker login docker.pkg.github.com --username publisher --password "${GITHUB_PACKAGE_REGISTRY_TOKEN}"
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
         docker push docker.pkg.github.com/panascais-docker/node/main:12
       env:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
 
     - name: Push the image to the Docker Registry
       run: |
-        docker login --username panascaisci --password "${DOCKER_REGISTRY_TOKEN}"
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
         docker push panascais-docker/node:12
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
@@ -119,14 +119,14 @@ jobs:
 
     - name: Push the image to the GitHub Registry
       run: |
-        docker login docker.pkg.github.com --username publisher --password "${GITHUB_PACKAGE_REGISTRY_TOKEN}"
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
         docker push docker.pkg.github.com/panascais-docker/node/main:13
       env:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
 
     - name: Push the image to the Docker Registry
       run: |
-        docker login --username panascaisci --password "${DOCKER_REGISTRY_TOKEN}"
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
         docker push panascais-docker/node:13
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
@@ -144,14 +144,14 @@ jobs:
 
     - name: Push the image to the GitHub Registry
       run: |
-        docker login docker.pkg.github.com --username publisher --password "${GITHUB_PACKAGE_REGISTRY_TOKEN}"
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
         docker push docker.pkg.github.com/panascais-docker/node/main:latest
       env:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
 
     - name: Push the image to the Docker Registry
       run: |
-        docker login --username panascaisci --password "${DOCKER_REGISTRY_TOKEN}"
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
         docker push panascais-docker/node:latest
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
