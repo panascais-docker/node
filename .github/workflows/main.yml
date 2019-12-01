@@ -5,154 +5,31 @@ on:
     - master
 
 jobs:
-  node_8:
-    name: 8
+  push:
+    name: ${{ matrix.node }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [8, 10, 11, 12, 13, latest]
     steps:
     - uses: actions/checkout@master
 
     - name: Build the docker container image
-      working-directory: ./8
+      working-directory: ./${{ matrix.node }}
       run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:8 .
-        docker tag panascais/node:8 docker.pkg.github.com/panascais-docker/node/main:8
+        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:${{ matrix.node }} .
+        docker tag panascais/node:${{ matrix.node }} docker.pkg.github.com/panascais-docker/node/main:${{ matrix.node }}
 
     - name: Push the image to the GitHub Registry
       run: |
         echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
-        docker push docker.pkg.github.com/panascais-docker/node/main:8
+        docker push docker.pkg.github.com/panascais-docker/node/main:${{ matrix.node }}
       env:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
 
     - name: Push the image to the Docker Registry
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais/node:8
+        docker push panascais/node:${{ matrix.node }}
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-  node_10:
-    name: 10
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-
-    - name: Build the docker container image
-      working-directory: ./10
-      run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:10 .
-        docker tag panascais/node:10 docker.pkg.github.com/panascais-docker/node/main:10
-
-    - name: Push the image to the GitHub Registry
-      run: |
-        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
-        docker push docker.pkg.github.com/panascais-docker/node/main:10
-      env:
-        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
-
-    - name: Push the image to the Docker Registry
-      run: |
-        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais/node:10
-      env:
-        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-  node_11:
-    name: 11
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-
-    - name: Build the docker container image
-      working-directory: ./11
-      run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:11 .
-        docker tag panascais/node:11 docker.pkg.github.com/panascais-docker/node/main:11
-
-    - name: Push the image to the GitHub Registry
-      run: |
-        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
-        docker push docker.pkg.github.com/panascais-docker/node/main:11
-      env:
-        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
-
-    - name: Push the image to the Docker Registry
-      run: |
-        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais/node:11
-      env:
-        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-  node_12:
-    name: 12
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-
-    - name: Build the docker container image
-      working-directory: ./12
-      run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:12 .
-        docker tag panascais/node:12 docker.pkg.github.com/panascais-docker/node/main:12
-
-    - name: Push the image to the GitHub Registry
-      run: |
-        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
-        docker push docker.pkg.github.com/panascais-docker/node/main:12
-      env:
-        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
-
-    - name: Push the image to the Docker Registry
-      run: |
-        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais/node:12
-      env:
-        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-  node_13:
-    name: 13
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-
-    - name: Build the docker container image
-      working-directory: ./13
-      run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:13 .
-        docker tag panascais/node:13 docker.pkg.github.com/panascais-docker/node/main:13
-
-    - name: Push the image to the GitHub Registry
-      run: |
-        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
-        docker push docker.pkg.github.com/panascais-docker/node/main:13
-      env:
-        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
-
-    - name: Push the image to the Docker Registry
-      run: |
-        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais/node:13
-      env:
-        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-  node_latest:
-    name: latest
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-
-    - name: Build the docker container image
-      working-directory: ./13
-      run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:latest .
-        docker tag panascais/node:latest docker.pkg.github.com/panascais-docker/node/main:latest
-
-    - name: Push the image to the GitHub Registry
-      run: |
-        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u publisher --password-stdin
-        docker push docker.pkg.github.com/panascais-docker/node/main:latest
-      env:
-        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
-
-    - name: Push the image to the Docker Registry
-      run: |
-        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u panascaisci --password-stdin
-        docker push panascais/node:latest
-      env:
-        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-
