@@ -1,5 +1,4 @@
-[![Docker Cloud Automated Build](https://img.shields.io/docker/cloud/automated/panascais/node.svg?style=flat-square)](https://hub.docker.com/r/panascais/node)
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/panascais/node.svg?style=flat-square)](https://hub.docker.com/r/panascais/node)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/panascais/node/main?style=flat-square)](https://github.com/panascais-docker/node/actions?query=workflow%3Amain)
 [![Docker Pulls](https://img.shields.io/docker/pulls/panascais/node.svg?style=flat-square)](https://hub.docker.com/r/panascais/node)
 [![Docker Stars](https://img.shields.io/docker/stars/panascais/node.svg?style=flat-square)](https://hub.docker.com/r/panascais/node)
 [![Docker Image Layers](https://img.shields.io/microbadger/layers/panascais/node.svg?style=flat-square)](https://microbadger.com/images/panascais/node)
