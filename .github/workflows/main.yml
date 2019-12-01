@@ -115,7 +115,7 @@ jobs:
       working-directory: ./13
       run: |
         docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:13 .
-        docker tag panascais/node:13 docker.pkg.github.com/panascais-docker/node/main:8
+        docker tag panascais/node:13 docker.pkg.github.com/panascais-docker/node/main:13
 
     - name: Push the image to the GitHub Registry
       run: |
