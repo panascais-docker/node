@@ -19,6 +19,7 @@ jobs:
       run: |
         docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t panascais/node:${{ matrix.node }} .
         docker tag panascais/node:${{ matrix.node }} docker.pkg.github.com/panascais-docker/node/main:${{ matrix.node }}
+        docker tag panascais/node:${{ matrix.node }} quay.io/panascais/node:${{ matrix.node }}
 
     - name: Push the image to the GitHub Registry
       run: |
@@ -35,3 +36,11 @@ jobs:
       env:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
         DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+
+    - name: Push the image to the Quay Registry
+      run: |
+        echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
+        docker push quay.io/panascais/node:${{ matrix.node }}
+      env:
+        QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
+        QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
