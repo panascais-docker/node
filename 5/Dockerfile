@@ -55,7 +55,7 @@ RUN addgroup -g 1000 node \
     && ./configure \
     && make -j$(getconf _NPROCESSORS_ONLN) V= \
     && make install \
-    && curl -L https://unpkg.com/@pnpm/self-installer | node \
+    && npm i -g pnpm@latest-1 \
     && apk del .build-deps \
     && cd .. \
     && rm -Rf "node-v$NODE_VERSION" \
