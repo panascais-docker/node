@@ -5,8 +5,7 @@ ARG VCS_REF
 
 ENV NODE_VERSION 7.10.1
 
-LABEL 
-    org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
+LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.name="Node Image" \
