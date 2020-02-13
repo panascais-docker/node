@@ -5,13 +5,23 @@ ARG VCS_REF
 
 ENV NODE_VERSION 10.17.0
 
-LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
+LABEL 
+    org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.name="Node Image" \
     org.label-schema.description="Panascais Node Image" \
     org.label-schema.vendor="Panascais, Inc." \
     org.label-schema.schema-version="1.0.0-rc1" \
+    org.opencontainers.image.revision=$VCS_REF \
+    org.opencontainers.image.version=$VERSION \
+    org.opencontainers.image.title="Node Image" \
+    org.opencontainers.image.description="Panascais Node Image" \
+    org.opencontainers.image.url=https://nodejs.org \
+    org.opencontainers.image.documentation="https://github.com/panascais-docker/node" \
+    org.opencontainers.image.vendor="Panascais, Inc." \
+    org.opencontainers.image.licenses=MIT \
+    org.opencontainers.image.source="https://github.com/panascais-docker/node" \
     maintainer="Panascais Open Source <oss@panascais.net>"
 
 RUN addgroup -g 1000 node \
