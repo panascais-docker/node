@@ -2,8 +2,7 @@ FROM alpine:3.12
 
 ARG BUILD_DATE
 ARG VCS_REF
-
-ENV NODE_VERSION 9.11.2
+ARG NODE_VERSION
 
 LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.label-schema.build-date=$BUILD_DATE \
