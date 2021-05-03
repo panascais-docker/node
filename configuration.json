@@ -1,0 +1,40 @@
+{
+    "versions": {
+        "4": "4.9.1",
+        "6": "6.17.1",
+        "7": "7.10.1",
+        "8": "8.17.0",
+        "9": "9.11.2",
+        "10": "10.24.1",
+        "11": "11.15.0",
+        "12": "12.22.1",
+        "13": "13.14.0",
+        "14": "14.16.1",
+        "15": "15.14.0",
+        "16": "16.0.0",
+        "latest": "16.0.0",
+        "lts": "14.16.1"
+    },
+    "pgp": [
+        { "id": "108F52B48DB57BB0CC439B2997B01419BD92F80A", "comment": "Ruy Adorno <ruyadorno@hotmail.com>" },
+        { "id": "114F43EE0176B71C7BC219DD50A3051F888C628D", "comment": "Julien Gilli <jgilli@fastmail.fm>" },
+        { "id": "1C050899334244A8AF75E53792EF661D867B9DFA", "comment": "Danielle Adams <adamzdanielle@gmail.com>" },
+        { "id": "4ED778F539E3634C779C87C6D7062848A1AB005C", "comment": "Beth Griggs <bgriggs@redhat.com>" },
+        { "id": "56730D5401028683275BD23C23EFEFE93C4CFFFE", "comment": "Italo A. Casas <me@italoacasas.com>" },
+        { "id": "71DCFD284A79C3B38668286BC97EC7A07EDE3FC1", "comment": "keybase.io/jasnell <jasnell@keybase.io>" },
+        { "id": "74F12602B6F1C4E913FAA37AD3A89613643B6201", "comment": "Danielle Adams <adamzdanielle@gmail.com>" },
+        { "id": "77984A986EBC2AA786BC0F66B01FBB92821C587A", "comment": "Gibson Fahnestock <gibfahn@gmail.com>" },
+        { "id": "7937DFD2AB06298B2293C3187D33FF9D0246406D", "comment": "Timothy J Fontaine (Personal) <tjfontaine@gmail.com>" },
+        { "id": "8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600", "comment": "Michaël Zasso (Targos) <targos@protonmail.com>" },
+        { "id": "93C7E9E91B49E432C2F75674B0A78B0A6C481CF6", "comment": "isaacs (http://blog.izs.me/) <i@izs.me>" },
+        { "id": "94AE36675C464D64BAFA68DD7434390BDBE9B9C5", "comment": "Colin Ihrig <cjihrig@gmail.com>" },
+        { "id": "9554F04D7259F04124DE6B476D5A82AC7E37093B", "comment": "Christopher Dickinson <christopher.s.dickinson@gmail.com>" },
+        { "id": "A48C2BEE680E841632CD4E44F07496B3EB3C1762", "comment": "Ruben Bridgewater <ruben@bridgewater.de>" },
+        { "id": "B9AE9905FFD7803F25714661B63B535A4C206CA9", "comment": "Evan Lucas <evanlucas@me.com>" },
+        { "id": "B9E2F5981AA6E0CD28160D9FF13993A75599653C", "comment": "Shelley Vohr (security is major key) <shelley.vohr@gmail.com>" },
+        { "id": "C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8", "comment": "Myles Borins <myles.borins@gmail.com>" },
+        { "id": "C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C", "comment": "Richard Lau <rlau@redhat.com>" },
+        { "id": "DD8F2338BAE7501E3DD5AC78C273792F7D83545D", "comment": "Rod Vagg <rod@vagg.org>" },
+        { "id": "FD3A5288F042B6850C66B31F09FE44734EB7990E", "comment": "Jeremiah Senkpiel <fishrock123@rocketmail.com>" }
+    ]
+}
