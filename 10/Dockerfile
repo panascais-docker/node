@@ -3,6 +3,7 @@ FROM alpine:3.13
 ARG BUILD_DATE
 ARG VCS_REF
 ARG NODE_VERSION
+ARG CHECKSUM
 
 LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.label-schema.build-date=$BUILD_DATE \
@@ -27,8 +28,18 @@ RUN addgroup -g 1000 node \
     && apk add --no-cache \
     libstdc++ \
     && apk add --no-cache --virtual .build-deps \
-    binutils-gold \
     curl \
+    && if [ -n "${CHECKSUM}" ]; then \
+    set -eu; \
+    curl -fsSLO --compressed "https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.xz"; \
+    echo "${CHECKSUM}  node-v${NODE_VERSION}-linux-x64-musl.tar.xz" | sha256sum -c - \
+    && tar -xJf "node-v${NODE_VERSION}-linux-x64-musl.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
+    else \
+    apk add --no-cache --virtual .build-deps \
+    bash \
+    binutils-gold \
+    ccache \
     g++ \
     gcc \
     gnupg \
@@ -36,6 +47,8 @@ RUN addgroup -g 1000 node \
     linux-headers \
     make \
     python2 \
+    python3 \
+    xz \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \
     # "Ruy Adorno <ruyadorno@hotmail.com>"
@@ -81,7 +94,8 @@ RUN addgroup -g 1000 node \
     ; do \
     gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
     gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
+    gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" || \
+    gpg --batch --keyserver hkp://keys.openpgp.org --recv-keys "$key"; \
     done \
     && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz" \
     && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
@@ -90,13 +104,14 @@ RUN addgroup -g 1000 node \
     && tar -xf "node-v$NODE_VERSION.tar.xz" \
     && cd "node-v$NODE_VERSION" \
     && ./configure \
-    && make -j$(getconf _NPROCESSORS_ONLN) V= \
+    && make -j$(getconf _NPROCESSORS_ONLN) V= DESTCPU="x64" ARCH="x64" DISTTYPE="release" VARIATION="musl" \
     && make install \
-    && curl -L https://unpkg.com/@pnpm/self-installer | node \
-    && apk del .build-deps \
     && cd .. \
     && rm -Rf "node-v$NODE_VERSION" \
-    && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
+    && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt; \
+    fi \
+    && curl -f https://get.pnpm.io/v5.js | node - add --global pnpm \
+    && apk del .build-deps;
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
