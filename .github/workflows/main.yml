@@ -22,7 +22,7 @@ jobs:
     - name: Build the docker container image
       working-directory: ./${{ matrix.node }}
       run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` --build-arg NODE_VERSION=`cat ../configuration.json | jq '.versions."${{ matrix.node }}"' -r` --build-arg CHECKSUM=`cat ../configuration.json | jq '.checksums."${{ matrix.node }}"' -r` -t panascais/node:${{ matrix.node }} .
+        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` --build-arg NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r` --build-arg CHECKSUM=`cat ../configuration/checksums.json | jq '."${{ matrix.node }}"' -r` -t panascais/node:${{ matrix.node }} .
         docker tag panascais/node:${{ matrix.node }} docker.pkg.github.com/panascais-docker/node/node:${{ matrix.node }}
         docker tag panascais/node:${{ matrix.node }} quay.io/panascais/node:${{ matrix.node }}
 

@@ -28,8 +28,8 @@
 docker build \
     --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
     --build-arg VCS_REF=`git rev-parse --short HEAD` \
-    --build-arg NODE_VERSION=`cat ../configuration.json | jq '.versions."14"' -r` \
-    --build-arg CHECKSUM=`cat ./configuration.json | jq '.checksums."14"' -r` \
+    --build-arg NODE_VERSION=`cat ./configuration/versions.json | jq '."14"' -r` \
+    --build-arg CHECKSUM=`cat ./configuration/checksums.json | jq '."14"' -r` \
     -t panascais/node:14 \
     ./14
 ```
@@ -40,8 +40,8 @@ docker build \
     --progress=plain \
     --build-arg BUILD_DATE=(date -u +"%Y-%m-%dT%H:%M:%SZ") \
     --build-arg VCS_REF=(git rev-parse --short HEAD) \
-    --build-arg NODE_VERSION=(cat ./configuration.json | jq '.versions."14"' -r) \
-    --build-arg CHECKSUM=(cat ./configuration.json | jq '.checksums."14"' -r) \
+    --build-arg NODE_VERSION=(cat ./configuration/versions.json | jq '."14"' -r) \
+    --build-arg CHECKSUM=(cat ./configuration/checksums.json | jq '."14"' -r) \
     -t panascais/node:14 \
     ./14
 ```
