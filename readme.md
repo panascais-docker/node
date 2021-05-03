@@ -21,6 +21,31 @@
 | `6`      | `docker pull panascais/node:6`     | `v6.x.x`          | ×              | [![Docker Image Layers](https://img.shields.io/microbadger/layers/panascais/node/6.svg?style=flat-square)](https://microbadger.com/images/panascais/node) [![Docker Image Size](https://img.shields.io/microbadger/image-size/panascais/node/6.svg?style=flat-square)](https://microbadger.com/images/panascais/node)           |
 | `4`      | `docker pull panascais/node:4`     | `v4.x.x`          | ×              | [![Docker Image Layers](https://img.shields.io/microbadger/layers/panascais/node/4.svg?style=flat-square)](https://microbadger.com/images/panascais/node) [![Docker Image Size](https://img.shields.io/microbadger/image-size/panascais/node/4.svg?style=flat-square)](https://microbadger.com/images/panascais/node)           |
 
+## Build
+
+**Example for bash and node version 14:**
+```sh
+docker build \
+    --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+    --build-arg VCS_REF=`git rev-parse --short HEAD` \
+    --build-arg NODE_VERSION=`cat ../configuration.json | jq '.versions."14"' -r` \
+    --build-arg CHECKSUM=`cat ./configuration.json | jq '.checksums."14"' -r` \
+    -t panascais/node:14 \
+    ./14
+```
+
+**Example for fish and node version 14:**
+```fish
+docker build \
+    --progress=plain \
+    --build-arg BUILD_DATE=(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+    --build-arg VCS_REF=(git rev-parse --short HEAD) \
+    --build-arg NODE_VERSION=(cat ./configuration.json | jq '.versions."14"' -r) \
+    --build-arg CHECKSUM=(cat ./configuration.json | jq '.checksums."14"' -r) \
+    -t panascais/node:14 \
+    ./14
+```
+
 ## Contributors
 
  - Silas Rech [(silas@panascais.net)](mailto:silas@panascais.net)
