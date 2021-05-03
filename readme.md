@@ -49,6 +49,7 @@ docker build \
 ## Contributors
 
  - Silas Rech [(silas@panascais.net)](mailto:silas@panascais.net)
+ - Maximilian Schagginger [(max@panascais.net)](mailto:max@panascais.net)
 
 ## Contributing:
 
