@@ -5,9 +5,8 @@ on:
     - master
 
 jobs:
-  push:
-    name: ${{ matrix.node }}
-    id: deploy
+  deploy:
+    name: deploy-${{ matrix.node }}
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     strategy:
@@ -71,7 +70,6 @@ jobs:
 
   notify-ci-node:
     name: notify-ci-node
-    id: notify-ci-node
     needs: [deploy]
     runs-on: ubuntu-latest
     steps:

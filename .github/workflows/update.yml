@@ -45,7 +45,6 @@ jobs:
 
   deploy:
     name: deploy-${{ matrix.node }}
-    id: deploy
     needs: [update]
     if: needs.update.outputs.main == 'continue'
     runs-on: ubuntu-latest
@@ -110,7 +109,6 @@ jobs:
     
   notify-ci-node:
     name: notify-ci-node
-    id: notify-ci-node
     needs: [deploy]
     runs-on: ubuntu-latest
     steps:
