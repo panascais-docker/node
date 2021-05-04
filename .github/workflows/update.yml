@@ -1,5 +1,6 @@
 name: update
-on: 
+on:
+  workflow_dispatch:
   schedule:
   - cron: "0 0 * * *"
 
@@ -28,7 +29,6 @@ jobs:
   deploy:
     name: ${{ matrix.node }}
     needs: [update]
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
