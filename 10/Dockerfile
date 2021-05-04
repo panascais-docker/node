@@ -110,7 +110,7 @@ RUN addgroup -g 1000 node \
     && rm -Rf "node-v$NODE_VERSION" \
     && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt; \
     fi \
-    && curl -f https://get.pnpm.io/v5.js | node - add --global pnpm \
+    && npx pnpm@4 i -g pnpm@4 \
     && apk del .build-deps;
 
 COPY docker-entrypoint.sh /usr/local/bin/
