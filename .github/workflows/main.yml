@@ -13,20 +13,36 @@ jobs:
       matrix:
         node: [8, 10, 12, 14, 15, 16, latest, lts]
     steps:
-    - uses: actions/checkout@master
+    - name: pull repository
+      id: repository
+      uses: actions/checkout@master
 
-    - name: Install dependencies
+    - name: install dependencies
+      id: dependencies
       run: |
         sudo apt install jq -y
 
-    - name: Build the docker container image
+    - name: update repository
+      id: update-repository
+      run: |
+        git pull origin master
+
+    - name: build the docker container image
+      id: build
       working-directory: ./${{ matrix.node }}
       run: |
-        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` --build-arg NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r` --build-arg CHECKSUM=`cat ../configuration/checksums.json | jq '."${{ matrix.node }}"' -r` -t panascais/node:${{ matrix.node }} .
+        export NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r`;
+        export CHECKSUM=`cat ../configuration/checksums.json | jq '."${{ matrix.node }}"' -r`;
+
+        echo "NODE_VERSION = $NODE_VERSION";
+        echo "CHECKSUM = $CHECKSUM";
+
+        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` --build-arg NODE_VERSION=$NODE_VERSION --build-arg CHECKSUM=$CHECKSUM -t panascais/node:${{ matrix.node }} .
         docker tag panascais/node:${{ matrix.node }} docker.pkg.github.com/panascais-docker/node/node:${{ matrix.node }}
         docker tag panascais/node:${{ matrix.node }} quay.io/panascais/node:${{ matrix.node }}
 
-    - name: Push the image to the GitHub Registry
+    - name: push the image to the GitHub Registry
+      id: push-github
       run: |
         echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u "${GITHUB_PACKAGE_REGISTRY_USERNAME}" --password-stdin
         docker push docker.pkg.github.com/panascais-docker/node/node:${{ matrix.node }}
@@ -34,7 +50,8 @@ jobs:
         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
         GITHUB_PACKAGE_REGISTRY_USERNAME: ${{ secrets.GITHUB_PACKAGE_REGISTRY_USERNAME }}
 
-    - name: Push the image to the Docker Registry
+    - name: push the image to the Docker Registry
+      id: push-docker
       run: |
         echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
         docker push panascais/node:${{ matrix.node }}
@@ -42,7 +59,8 @@ jobs:
         DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
         DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
 
-    - name: Push the image to the Quay Registry
+    - name: push the image to the Quay Registry
+      id: push-quay
       run: |
         echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
         docker push quay.io/panascais/node:${{ matrix.node }}
