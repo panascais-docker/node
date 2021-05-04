@@ -1,0 +1,72 @@
+name: update
+on: 
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  update:
+    name: update
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Install dependencies
+      run: |
+        sudo apt install jq jo -y
+
+    - name: Run update script
+      run: |
+        bash .github/scripts/update.sh;
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        if [ -n "$(git status --untracked-files=no --porcelain)" ]; then 
+          git add -A && git commit -m "Update configuration files" && git push origin master;
+        else
+          exit 1;
+        fi;
+  deploy:
+    name: ${{ matrix.node }}
+    needs: [update]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [8, 10, 12, 14, 15, 16, latest, lts]
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Install dependencies
+      run: |
+        sudo apt install jq -y
+
+    - name: Build the docker container image
+      working-directory: ./${{ matrix.node }}
+      run: |
+        docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` --build-arg NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r` --build-arg CHECKSUM=`cat ../configuration/checksums.json | jq '."${{ matrix.node }}"' -r` -t panascais/node:${{ matrix.node }} .
+        docker tag panascais/node:${{ matrix.node }} docker.pkg.github.com/panascais-docker/node/node:${{ matrix.node }}
+        docker tag panascais/node:${{ matrix.node }} quay.io/panascais/node:${{ matrix.node }}
+
+    - name: Push the image to the GitHub Registry
+      run: |
+        echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u "${GITHUB_PACKAGE_REGISTRY_USERNAME}" --password-stdin
+        docker push docker.pkg.github.com/panascais-docker/node/node:${{ matrix.node }}
+      env:
+        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
+        GITHUB_PACKAGE_REGISTRY_USERNAME: ${{ secrets.GITHUB_PACKAGE_REGISTRY_USERNAME }}
+
+    - name: Push the image to the Docker Registry
+      run: |
+        echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
+        docker push panascais/node:${{ matrix.node }}
+      env:
+        DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+        DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+
+    - name: Push the image to the Quay Registry
+      run: |
+        echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
+        docker push quay.io/panascais/node:${{ matrix.node }}
+      env:
+        QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
+        QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
