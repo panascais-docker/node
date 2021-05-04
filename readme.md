@@ -37,7 +37,6 @@ docker build \
 **Example for fish and node version 14:**
 ```fish
 docker build \
-    --progress=plain \
     --build-arg BUILD_DATE=(date -u +"%Y-%m-%dT%H:%M:%SZ") \
     --build-arg VCS_REF=(git rev-parse --short HEAD) \
     --build-arg NODE_VERSION=(cat ./configuration/versions.json | jq '."14"' -r) \
