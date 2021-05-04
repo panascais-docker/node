@@ -7,6 +7,7 @@ on:
 jobs:
   update:
     name: update
+    id: update
     runs-on: ubuntu-latest
     outputs:
       main: ${{steps.update.outputs.result}}
@@ -44,6 +45,7 @@ jobs:
 
   deploy:
     name: deploy-${{ matrix.node }}
+    id: deploy
     needs: [update]
     if: needs.update.outputs.main == 'continue'
     runs-on: ubuntu-latest
@@ -106,6 +108,12 @@ jobs:
         QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
         QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
     
+  notify-ci-node:
+    name: notify-ci-node
+    id: notify-ci-node
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
     - name: start ci-node workflow
       id: push-ci-node
       run: |
