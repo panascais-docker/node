@@ -7,7 +7,6 @@ on:
 jobs:
   update:
     name: update
-    id: update
     runs-on: ubuntu-latest
     outputs:
       main: ${{steps.update.outputs.result}}
