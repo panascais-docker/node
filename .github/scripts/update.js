@@ -33,20 +33,26 @@ const run = async () => {
     __dirname,
     "../../configuration/checksums.json"
   );
-  const originalVersions = await readFile(versionsLocation, {
-    encoding: "utf-8",
-  })
-    .then(JSON.parse)
-    .then(JSON.stringify);
-  const originalChecksums = await readFile(checksumsLocation, {
-    encoding: "utf-8",
-  })
-    .then(JSON.parse)
-    .then(JSON.stringify);
+
+  const [
+    originalVersionsParsed,
+    originalVersions,
+    originalChecksumsParsed,
+    originalChecksums,
+  ] = await Promise.all([
+    readFile(versionsLocation, { encoding: "utf-8" }),
+    readFile(checksumsLocation, { encoding: "utf-8" }),
+  ]).then((result) => {
+    return result.flatMap((entry) => {
+      const parsed = JSON.parse(entry);
+      return [parsed, JSON.stringify(parsed)];
+    });
+  });
 
   const versionList = await Promise.all(
     Object.entries(url).map(async ([id, link]) => {
-      const regex = /node-v(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)\.tar\.xz/gm;
+      const regex =
+        /node-v(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)\.tar\.xz/gm;
 
       const { body } = await got(link);
 
@@ -88,14 +94,24 @@ const run = async () => {
     return element;
   }, {});
 
-  const changed = !(
-    originalVersions === JSON.stringify(versions) &&
-    originalChecksums === JSON.stringify(checksums)
-  );
+  const versionKeysBefore = Object.keys(originalVersionsParsed).length;
+  const versionKeysAfter = Object.keys(versions).length;
+  const checksumKeysBefore = Object.keys(originalChecksumsParsed).length;
+  const checksumKeysAfter = Object.keys(checksums).length;
+  const changed =
+    versionKeysBefore === versionKeysAfter &&
+    checksumKeysBefore === checksumKeysAfter &&
+    !(
+      originalVersions === JSON.stringify(versions) &&
+      originalChecksums === JSON.stringify(checksums)
+    );
 
   if (changed) {
-    await writeFile(versionsLocation, JSON.stringify(versions, null, 4) + '\n');
-    await writeFile(checksumsLocation, JSON.stringify(checksums, null, 4) + '\n');
+    await writeFile(versionsLocation, JSON.stringify(versions, null, 4) + "\n");
+    await writeFile(
+      checksumsLocation,
+      JSON.stringify(checksums, null, 4) + "\n"
+    );
     return "continue";
   } else {
     return "exit";
