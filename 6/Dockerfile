@@ -94,8 +94,10 @@ RUN addgroup -g 1000 node \
     && make install \
     && curl -L https://unpkg.com/@pnpm/self-installer | node \
     && apk del .build-deps \
-    && cd .. \
-    && rm -Rf "node-v$NODE_VERSION" \
+    && rm -rf "node-v$NODE_VERSION" \
+    && rm -rf  /usr/local/*.md \
+    && rm -rf  /usr/local/LICENSE \
+    && rm -rf  /usr/local/include/node/ \
     && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
 
 COPY docker-entrypoint.sh /usr/local/bin/

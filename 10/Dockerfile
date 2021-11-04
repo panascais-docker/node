@@ -106,8 +106,10 @@ RUN addgroup -g 1000 node \
     && ./configure \
     && make -j$(getconf _NPROCESSORS_ONLN) V= DESTCPU="x64" ARCH="x64" DISTTYPE="release" VARIATION="musl" \
     && make install \
-    && cd .. \
-    && rm -Rf "node-v$NODE_VERSION" \
+    && rm -rf "node-v$NODE_VERSION" \
+    && rm -rf  /usr/local/*.md \
+    && rm -rf  /usr/local/LICENSE \
+    && rm -rf  /usr/local/include/node/ \
     && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt; \
     fi \
     && npx pnpm@4 i -g pnpm@4 \
