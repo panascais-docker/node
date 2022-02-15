@@ -33,6 +33,7 @@ RUN addgroup -g 1000 node \
     gcc \
     gnupg \
     libgcc \
+    strip \
     linux-headers \
     make \
     python2 \
@@ -97,9 +98,12 @@ RUN addgroup -g 1000 node \
     && rm -rf  /usr/local/*.md || true \
     && rm -rf  /usr/local/LICENSE || true \
     && rm -rf  /usr/local/include/node/ || true \
-    && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt || true \
+    && rm *.tar.xz SHASUMS256.txt.asc SHASUMS256.txt || true \
+    && strip /usr/local/bin/node || true \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
     && npx pnpm@3 i -g pnpm@3 \
+    && rm -rf /usr/local/bin/corepack || true \
+    && rm -rf /usr/local/lib/node_modules/corepack || true \
     && apk del .build-deps;
 
 COPY docker-entrypoint.sh /usr/local/bin/
