@@ -27,13 +27,12 @@ RUN addgroup -g 1000 node \
     && apk add --no-cache \
     libstdc++ \
     && apk add --no-cache --virtual .build-deps \
-    binutils-gold \
+    binutils \
     curl \
     g++ \
     gcc \
     gnupg \
     libgcc \
-    strip \
     linux-headers \
     make \
     python2 \

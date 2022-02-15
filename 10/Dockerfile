@@ -29,6 +29,7 @@ RUN addgroup -g 1000 node \
     libstdc++ \
     && apk add --no-cache --virtual .build-deps \
     curl \
+    binutils \
     && if [ -n "${CHECKSUM}" ]; then \
     set -eu; \
     curl -fsSLO --compressed "https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.xz"; \
@@ -37,13 +38,11 @@ RUN addgroup -g 1000 node \
     else \
     apk add --no-cache --virtual .build-deps \
     bash \
-    binutils-gold \
     ccache \
     g++ \
     gcc \
     gnupg \
     libgcc \
-    strip \
     linux-headers \
     make \
     python2 \
