@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:3.15
 
 ARG BUILD_DATE
 ARG VCS_REF
@@ -91,14 +91,16 @@ RUN addgroup -g 1000 node \
     && cd "node-v$NODE_VERSION" \
     && ./configure \
     && make -j$(getconf _NPROCESSORS_ONLN) V= \
-    && make install \
-    && curl -L https://unpkg.com/@pnpm/self-installer | node \
-    && apk del .build-deps \
-    && rm -rf "node-v$NODE_VERSION" \
-    && rm -rf  /usr/local/*.md \
-    && rm -rf  /usr/local/LICENSE \
-    && rm -rf  /usr/local/include/node/ \
-    && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
+    && make install; \
+    fi \
+    && rm -rf "node-v$NODE_VERSION" || true \
+    && rm -rf  /usr/local/*.md || true \
+    && rm -rf  /usr/local/LICENSE || true \
+    && rm -rf  /usr/local/include/node/ || true \
+    && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt || true \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
+    && npx pnpm@1 i -g pnpm@1 \
+    && apk del .build-deps;
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]

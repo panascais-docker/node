@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:3.15
 
 ARG BUILD_DATE
 ARG VCS_REF
@@ -33,8 +33,7 @@ RUN addgroup -g 1000 node \
     set -eu; \
     curl -fsSLO --compressed "https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.xz"; \
     echo "${CHECKSUM}  node-v${NODE_VERSION}-linux-x64-musl.tar.xz" | sha256sum -c - \
-    && tar -xJf "node-v${NODE_VERSION}-linux-x64-musl.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
-    && ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
+    && tar -xJf "node-v${NODE_VERSION}-linux-x64-musl.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
     else \
     apk add --no-cache --virtual .build-deps \
     bash \
@@ -105,13 +104,14 @@ RUN addgroup -g 1000 node \
     && cd "node-v$NODE_VERSION" \
     && ./configure \
     && make -j$(getconf _NPROCESSORS_ONLN) V= DESTCPU="x64" ARCH="x64" DISTTYPE="release" VARIATION="musl" \
-    && make install \
-    && rm -rf "node-v$NODE_VERSION" \
-    && rm -rf  /usr/local/*.md \
-    && rm -rf  /usr/local/LICENSE \
-    && rm -rf  /usr/local/include/node/ \
-    && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt; \
+    && make install; \
     fi \
+    && rm -rf "node-v$NODE_VERSION" || true \
+    && rm -rf  /usr/local/*.md || true \
+    && rm -rf  /usr/local/LICENSE || true \
+    && rm -rf  /usr/local/include/node/ || true \
+    && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt || true \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
     && npx pnpm@3 i -g pnpm@3 \
     && apk del .build-deps;
 
