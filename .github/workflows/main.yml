@@ -32,10 +32,8 @@ jobs:
         working-directory: ./${{ matrix.node }}
         run: |
           export NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r`;
-          export CHECKSUM=`cat ../configuration/checksums.json | jq '."${{ matrix.node }}"' -r`;
 
           echo "NODE_VERSION = $NODE_VERSION";
-          echo "CHECKSUM = $CHECKSUM";
 
           echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
           echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
@@ -48,7 +46,6 @@ jobs:
             --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
             --build-arg VCS_REF=`git rev-parse --short HEAD` \
             --build-arg NODE_VERSION=$NODE_VERSION \
-            --build-arg CHECKSUM=$CHECKSUM \
             -t panascais/node:${{ matrix.node }} \
             -t quay.io/panascais/node:${{ matrix.node }} \
             .
