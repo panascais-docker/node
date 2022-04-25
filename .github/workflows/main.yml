@@ -44,11 +44,11 @@ jobs:
   #     - name: push the image to the GitHub Registry
   #       id: push-github
   #       run: |
-  #         echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u "${GITHUB_PACKAGE_REGISTRY_USERNAME}" --password-stdin
+  #         echo "${CONTAINER_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u "${CONTAINER_REGISTRY_USERNAME}" --password-stdin
   #         docker push docker.pkg.github.com/panascais-docker/node/node:${{ matrix.node }}
   #       env:
-  #         GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
-  #         GITHUB_PACKAGE_REGISTRY_USERNAME: ${{ secrets.GITHUB_PACKAGE_REGISTRY_USERNAME }}
+  #         CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+  #         CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
 
   #     - name: push the image to the Docker Registry
   #       id: push-docker
@@ -100,9 +100,9 @@ jobs:
           echo "NODE_VERSION = $NODE_VERSION";
           echo "CHECKSUM = $CHECKSUM";
 
-          # echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u "${GITHUB_PACKAGE_REGISTRY_USERNAME}" --password-stdin
           echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
           echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
+          echo "${CONTAINER_REGISTRY_TOKEN}" | docker login ghcr.io -u "${CONTAINER_REGISTRY_USERNAME}" --password-stdin
 
           docker buildx create --use
           docker buildx inspect --bootstrap
@@ -115,10 +115,11 @@ jobs:
             --build-arg CHECKSUM=$CHECKSUM \
             -t panascais/node:${{ matrix.node }} \
             -t quay.io/panascais/node:${{ matrix.node }} \
+            -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
             .
         env:
-          GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
-          GITHUB_PACKAGE_REGISTRY_USERNAME: ${{ secrets.GITHUB_PACKAGE_REGISTRY_USERNAME }}
+          CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+          CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
           DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
           DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
