@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
+        # node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
+        node: [18]
     steps:
       - name: pull repository
         id: repository
