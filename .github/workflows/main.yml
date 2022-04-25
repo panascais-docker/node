@@ -102,7 +102,7 @@ jobs:
 
           # echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u "${GITHUB_PACKAGE_REGISTRY_USERNAME}" --password-stdin
           echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
-          # echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
+          echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
 
           docker buildx create --use
           docker buildx inspect --bootstrap
@@ -114,6 +114,7 @@ jobs:
             --build-arg NODE_VERSION=$NODE_VERSION \
             --build-arg CHECKSUM=$CHECKSUM \
             -t panascais/node:${{ matrix.node }} \
+            -t quay.io/panascais/node:${{ matrix.node }} \
             .
         env:
           GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}
