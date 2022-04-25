@@ -51,7 +51,6 @@ jobs:
             --build-arg CHECKSUM=$CHECKSUM \
             -t panascais/node:${{ matrix.node }} \
             -t quay.io/panascais/node:${{ matrix.node }} \
-            # -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
             .
         env:
           CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
