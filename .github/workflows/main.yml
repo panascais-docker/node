@@ -68,9 +68,56 @@ jobs:
           QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
           QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
 
+  deploy-buildx-multiarch:
+    name: deploy-${{ matrix.node }}
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
+    steps:
+      - name: pull repository
+        id: repository
+        uses: actions/checkout@master
+
+      - name: install dependencies
+        id: dependencies
+        run: |
+          sudo apt install jq -y
+
+      - name: update repository
+        id: update-repository
+        run: |
+          git pull origin master
+
+      - name: build and push the docker container image
+        id: build
+        working-directory: ./${{ matrix.node }}
+        run: |
+          export NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r`;
+          export CHECKSUM=`cat ../configuration/checksums.json | jq '."${{ matrix.node }}"' -r`;
+
+          echo "NODE_VERSION = $NODE_VERSION";
+          echo "CHECKSUM = $CHECKSUM";
+
+          echo "${GITHUB_PACKAGE_REGISTRY_TOKEN}" | docker login docker.pkg.github.com -u "${GITHUB_PACKAGE_REGISTRY_USERNAME}" --password-stdin
+          echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
+          echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
+
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+            --build-arg VCS_REF=`git rev-parse --short HEAD` \
+            --build-arg NODE_VERSION=$NODE_VERSION \
+            --build-arg CHECKSUM=$CHECKSUM \
+            -t docker.pkg.github.com/panascais-docker/node/node:${{ matrix.node }} \
+            -t panascais/node:${{ matrix.node }} \
+            -t quay.io/panascais/node:${{ matrix.node }} \
+            .
+
   notify-ci-node:
     name: notify-ci-node
-    needs: [deploy]
+    needs: [deploy, deploy-buildx-multiarch]
     runs-on: ubuntu-latest
     steps:
       - name: start ci-node workflow
