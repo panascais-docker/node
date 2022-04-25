@@ -70,6 +70,8 @@ RUN addgroup -g 1000 node \
     && grep " node-v$NODE_VERSION.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
     && tar -xf "node-v$NODE_VERSION.tar.xz" \
     && cd "node-v$NODE_VERSION" \
+    && mkdir -p /usr/local/sbin \
+    && ln -s /usr/bin/python3 /usr/local/sbin/python3.9 \
     && ./configure \
     && make install -j$(getconf _NPROCESSORS_ONLN) V= DISTTYPE="release" VARIATION="musl" \
     && cd .. \
