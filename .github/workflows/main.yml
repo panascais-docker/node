@@ -105,6 +105,7 @@ jobs:
           # echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
 
           docker buildx create --use
+          docker buildx inspect --bootstrap
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --push \
