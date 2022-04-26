@@ -6,7 +6,7 @@ ARG NODE_VERSION
 
 COPY build.sh .
 
-RUN apk add --no-cache --virtual .build-deps curl binutils bash ccache g++ gcc gnupg libgcc libc6-compat linux-headers make python2 python3 xz
+RUN apk add --no-cache curl binutils bash ccache g++ gcc gnupg libgcc libc6-compat linux-headers make python2 python3 xz
 RUN bash ./build.sh
 
 # FROM alpine:3.15 as packager
