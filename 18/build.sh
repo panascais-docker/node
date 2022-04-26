@@ -37,6 +37,10 @@ mkdir -p /usr/local/sbin;
 ln -s /usr/bin/python3 /usr/local/sbin/python3.9;
 ln -s /usr/bin/python3 /usr/local/sbin/python;
 
+which python;
+which python3;
+which python3.9;
+which python2;
 python3 --version;
 python2 --version;
 /usr/local/sbin/python3.9 --version;
