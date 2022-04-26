@@ -37,6 +37,9 @@ mkdir -p /usr/local/sbin;
 ln -s /usr/bin/python3 /usr/local/sbin/python3.9;
 ln -s /usr/bin/python3 /usr/local/sbin/python;
 
+/usr/local/sbin/python3.9 --version;
+/usr/local/sbin/python --version;
+
 ./configure;
 
 make install -j$(getconf _NPROCESSORS_ONLN) V= ARCH=$ARCH DISTTYPE="release" VARIATION="musl";
