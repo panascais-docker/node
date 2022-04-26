@@ -24,6 +24,8 @@ case "${alpineArch##*-}" in
     *) echo "Unsupported Alpine architecture: $alpineArch"; exit 1 ;;
 esac
 
+echo "ARCH=$ARCH";
+
 curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz";
 
 tar -xf "node-v$NODE_VERSION.tar.xz";
@@ -33,6 +35,7 @@ cd "node-v$NODE_VERSION";
 mkdir -p /usr/local/sbin;
 
 ln -s /usr/bin/python3 /usr/local/sbin/python3.9;
+ln -s /usr/bin/python3 /usr/local/sbin/python;
 
 ./configure;
 
