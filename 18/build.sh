@@ -37,6 +37,8 @@ mkdir -p /usr/local/sbin;
 ln -s /usr/bin/python3 /usr/local/sbin/python3.9;
 ln -s /usr/bin/python3 /usr/local/sbin/python;
 
+python3 --version;
+python2 --version;
 /usr/local/sbin/python3.9 --version;
 /usr/local/sbin/python --version;
 
