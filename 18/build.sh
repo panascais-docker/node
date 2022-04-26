@@ -5,6 +5,9 @@ set -u
 set -o pipefail
 set -x
 
+export CC=/usr/bin/gcc;
+export CXX=/usr/bin/g++;
+
 addgroup -g 1000 node;
 adduser -u 1000 -G node -s /bin/sh -D node;
 
