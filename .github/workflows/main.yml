@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         # node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
-        node: [17]
+        node: [16]
     steps:
       - name: pull repository
         id: repository
