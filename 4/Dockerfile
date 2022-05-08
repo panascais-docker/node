@@ -22,9 +22,7 @@ RUN strip /usr/local/bin/node \
     && curl -fsSL https://unpkg.com/@pnpm/self-installer | node \
     # smoke tests
     && node -v \
-    && pnpm -v \
-    && npm -v \
-    && npx -v
+    && pnpm -v
 
 FROM alpine:3.15 as packager
 

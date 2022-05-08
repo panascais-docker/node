@@ -22,9 +22,7 @@ RUN strip /usr/local/bin/node \
     && curl -fsSL https://get.pnpm.io/v5.js | node - add --global pnpm \
     # smoke tests
     && node -v \
-    && pnpm -v \
-    && npm -v \
-    && npx -v
+    && pnpm -v
 
 FROM alpine:3.15 as packager
 

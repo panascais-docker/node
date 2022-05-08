@@ -12,8 +12,8 @@ jobs:
     timeout-minutes: 360
     strategy:
       matrix:
-        # node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
-        node: [18]
+        node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
+        # node: [18]
     steps:
       - name: pull repository
         id: repository
@@ -33,23 +33,16 @@ jobs:
         id: build
         working-directory: ./${{ matrix.node }}
         run: |
-          export NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r`;
-
-          echo "NODE_VERSION = $NODE_VERSION";
-
           echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
           echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
           # echo "${CONTAINER_REGISTRY_TOKEN}" | docker login ghcr.io -u "${CONTAINER_REGISTRY_USERNAME}" --password-stdin
 
-          docker -v
-
           docker buildx create --use
           docker buildx build \
-            --platform linux/arm64 \
+            --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
             --push \
             --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
             --build-arg VCS_REF=`git rev-parse --short HEAD` \
-            --build-arg NODE_VERSION=$NODE_VERSION \
             -t panascais/node:${{ matrix.node }} \
             -t quay.io/panascais/node:${{ matrix.node }} \
             .

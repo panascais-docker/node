@@ -22,9 +22,7 @@ RUN strip /usr/local/bin/node \
     && npx pnpm@1 i -g pnpm@1 \
     # smoke tests
     && node -v \
-    && pnpm -v \
-    && npm -v \
-    && npx -v
+    && pnpm -v
 
 FROM alpine:3.15 as packager
 
