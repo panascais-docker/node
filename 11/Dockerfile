@@ -1,25 +1,8 @@
 FROM node:11-alpine as builder
 
-RUN apk add --no-cache \
-    autoconf \
-    bash \
-    binutils \
-    ccache \
-    curl \
-    g++ \
-    gcc \
-    gdb \
-    gnupg \
-    libc6-compat \
-    libgcc \
-    libstdc++ \
-    linux-headers \
-    make \
-    python2 \
-    python3 \
-    xz
+RUN apk add --no-cache binutils curl
 RUN strip /usr/local/bin/node \
-    && curl -fsSL https://get.pnpm.io/v5.js | node - add --global pnpm \
+    && curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@5 \
     # smoke tests
     && node -v \
     && pnpm -v

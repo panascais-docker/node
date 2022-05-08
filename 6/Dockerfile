@@ -1,25 +1,11 @@
 FROM node:6-alpine as builder
 
-RUN apk add --no-cache \
-    autoconf \
-    bash \
-    binutils \
-    ccache \
-    curl \
-    g++ \
-    gcc \
-    gdb \
-    gnupg \
-    libc6-compat \
-    libgcc \
-    libstdc++ \
-    linux-headers \
-    make \
-    python2 \
-    python3 \
-    xz
+RUN apk add --no-cache binutils curl
 RUN strip /usr/local/bin/node \
-    && npx pnpm@1 i -g pnpm@1 \
+    && mkdir -p /usr/local/sbin \
+    && ln -s /usr/local/bin/node /usr/local/sbin/node \
+    && chmod +x /usr/local/sbin/node \
+    && curl -fsSL https://unpkg.com/@pnpm/self-installer | node \
     # smoke tests
     && node -v \
     && pnpm -v
@@ -57,7 +43,6 @@ COPY --from=builder /usr/local/bin/node /usr/local/bin/node
 COPY --from=builder /usr/local/bin/pnpm /usr/local/bin/pnpm
 COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=builder /usr/local/share /usr/local/share
-COPY --from=builder /usr/local/pnpm-global /usr/local/pnpm-global
 
 COPY docker-entrypoint.sh /usr/local/bin/
 

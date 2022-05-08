@@ -12,8 +12,8 @@ jobs:
     timeout-minutes: 360
     strategy:
       matrix:
-        # node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
-        node: [14]
+        node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
+        # node: [8]
     steps:
       - name: pull repository
         id: repository
@@ -38,15 +38,28 @@ jobs:
           echo "${CONTAINER_REGISTRY_TOKEN}" | docker login ghcr.io -u "${CONTAINER_REGISTRY_USERNAME}" --password-stdin
 
           docker buildx create --use
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
-            --push \
-            --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-            --build-arg VCS_REF=`git rev-parse --short HEAD` \
-            -t panascais/node:${{ matrix.node }} \
-            -t quay.io/panascais/node:${{ matrix.node }} \
-            -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
-            .
+
+          if [ ${{ matrix.node }} -le 10 ]; then
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              --push \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+              --build-arg VCS_REF=`git rev-parse --short HEAD` \
+              -t panascais/node:${{ matrix.node }} \
+              -t quay.io/panascais/node:${{ matrix.node }} \
+              -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
+              .;
+          else
+            docker buildx build \
+              --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
+              --push \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+              --build-arg VCS_REF=`git rev-parse --short HEAD` \
+              -t panascais/node:${{ matrix.node }} \
+              -t quay.io/panascais/node:${{ matrix.node }} \
+              -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
+              .;
+          fi;
         env:
           CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
           CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}

@@ -1,24 +1,10 @@
 FROM node:8-alpine as builder
 
-RUN apk add --no-cache \
-    autoconf \
-    bash \
-    binutils \
-    ccache \
-    curl \
-    g++ \
-    gcc \
-    gdb \
-    gnupg \
-    libc6-compat \
-    libgcc \
-    libstdc++ \
-    linux-headers \
-    make \
-    python2 \
-    python3 \
-    xz
+RUN apk add --no-cache binutils curl
 RUN strip /usr/local/bin/node \
+    && mkdir -p /usr/local/sbin \
+    && ln -s /usr/local/bin/node /usr/local/sbin/node \
+    && chmod +x /usr/local/sbin/node \
     && npx pnpm@3 i -g pnpm@3 \
     # smoke tests
     && node -v \
