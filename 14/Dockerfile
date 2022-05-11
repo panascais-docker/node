@@ -12,6 +12,9 @@ FROM alpine:3.15 as packager
 ARG BUILD_DATE
 ARG VCS_REF
 
+ENV PNPM_HOME=~/.local/share/pnpm
+ENV PATH=${PNPM_HOME}:${PATH}
+
 LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-ref=$VCS_REF \
