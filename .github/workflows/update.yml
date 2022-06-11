@@ -53,8 +53,16 @@ jobs:
         node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
     steps:
       - name: pull repository
+        uses: actions/checkout@v3
         id: repository
-        uses: actions/checkout@master
+
+      - name: setup docker qemu
+        uses: docker/setup-qemu-action@v2
+        id: qemu
+
+      - name: setup docker buildx
+        uses: docker/setup-buildx-action@v2
+        id: buildx
 
       - name: install dependencies
         id: dependencies
