@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         node: [8, 10, 12, 14, 15, 16, 17, 18, latest, lts]
-        # node: [8]
     steps:
       - name: pull repository
         id: repository
@@ -68,12 +67,12 @@ jobs:
           QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
           QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
 
-  # notify-ci-node:
-  #   name: notify-ci-node
-  #   needs: [deploy, deploy-buildx-multiarch]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: start ci-node workflow
-  #       id: push-ci-node
-  #       run: |
-  #         curl -XPOST -u "${{ secrets.PANASCAIS_CI_NODE_USERNAME}}:${{secrets.PANASCAIS_CI_NODE_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/panascais-docker/ci-node/actions/workflows/main.yml/dispatches --data '{"ref": "master"}';
+  notify-ci-node:
+    name: notify-ci-node
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: start ci-node workflow
+        id: push-ci-node
+        run: |
+          curl -XPOST -u "${{ secrets.PANASCAIS_CI_NODE_USERNAME}}:${{secrets.PANASCAIS_CI_NODE_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/panascais-docker/ci-node/actions/workflows/main.yml/dispatches --data '{"ref": "master"}';
