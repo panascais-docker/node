@@ -22,6 +22,7 @@ const url = {
   16: "https://nodejs.org/dist/latest-v16.x/",
   17: "https://nodejs.org/dist/latest-v17.x/",
   18: "https://nodejs.org/dist/latest-v18.x/",
+  19: "https://nodejs.org/dist/latest-v19.x/",
   lts: "https://nodejs.org/dist/latest-v16.x/",
   latest: "https://nodejs.org/dist/latest/",
 };
