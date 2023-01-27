@@ -94,7 +94,7 @@ jobs:
               -t quay.io/panascais/node:${{ matrix.node }} \
               -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
               .;
-          else if [ ${{ matrix.node }} -ge 19 ]; then
+          elif [ ${{ matrix.node }} -ge 19 ]; then
             docker buildx build \
               --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x \
               --push \
