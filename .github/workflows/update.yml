@@ -94,9 +94,9 @@ jobs:
               -t quay.io/panascais/node:${{ matrix.node }} \
               -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
               .;
-          elif [ ${{ matrix.node }} -ge 19 ]; then
+          elif [ ${{ matrix.node }} -le 18 ]; then
             docker buildx build \
-              --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x \
+              --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
               --push \
               --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg VCS_REF=`git rev-parse --short HEAD` \
@@ -106,7 +106,7 @@ jobs:
               .;
           else
             docker buildx build \
-              --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
+              --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x \
               --push \
               --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg VCS_REF=`git rev-parse --short HEAD` \
