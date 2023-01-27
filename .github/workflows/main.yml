@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 360
     strategy:
       matrix:
-        node: [12, 14, 15, 16, 17, 18, latest, lts]
+        node: [12, 14, 15, 16, 17, 18, 19, latest, lts]
     steps:
       - name: pull repository
         uses: actions/checkout@v3
