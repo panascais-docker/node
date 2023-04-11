@@ -1,3 +1,5 @@
+# `panascais/node`
+
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/panascais-docker/node/main.yml?branch=master&style=flat-square)](https://github.com/panascais-docker/node/actions?query=workflow%3Amain)
 [![Docker Pulls](https://img.shields.io/docker/pulls/panascais/node.svg?style=flat-square)](https://hub.docker.com/r/panascais/node)
 [![Docker Stars](https://img.shields.io/docker/stars/panascais/node.svg?style=flat-square)](https://hub.docker.com/r/panascais/node)
@@ -55,10 +57,10 @@ docker build \
 - Silas Rech [(silas@panascais.net)](mailto:silas@panascais.net)
 - Maximilian Schagginger [(max@panascais.net)](mailto:max@panascais.net)
 
-## Contributing:
+## Contributing
 
 Interested in contributing to **Node**? Contributions are welcome, and are accepted via pull requests. Please [review these guidelines](contributing.md) before submitting any pull requests.
 
-## License:
+## License
 
 Code licensed under [MIT](license.md), documentation under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
