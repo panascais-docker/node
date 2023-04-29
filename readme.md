@@ -9,7 +9,8 @@
 | **Tag:** | **Command:**                     | **Node Version:** | **Supported:** | **Labels:**                                                                                            |
 | -------- | -------------------------------- | ----------------- | -------------- | ------------------------------------------------------------------------------------------------------ |
 | `lts`    | `docker pull panascais/node:lts` | `v18.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/lts?style=flat-square)    |
-| `latest` | `docker pull panascais/node`     | `v19.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/latest?style=flat-square) |
+| `latest` | `docker pull panascais/node`     | `v20.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/latest?style=flat-square) |
+| `20`     | `docker pull panascais/node:20`  | `v20.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/20?style=flat-square)     |
 | `19`     | `docker pull panascais/node:19`  | `v19.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/19?style=flat-square)     |
 | `18`     | `docker pull panascais/node:18`  | `v18.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/18?style=flat-square)     |
 | `17`     | `docker pull panascais/node:17`  | `v17.x.x`         | ×              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/17?style=flat-square)     |
