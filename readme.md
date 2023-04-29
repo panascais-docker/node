@@ -29,28 +29,28 @@
 
 ## Build
 
-**Example for bash and node version 14:**
+**Example for bash and node version 20:**
 
 ```sh
 docker build \
     --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
     --build-arg VCS_REF=`git rev-parse --short HEAD` \
-    --build-arg NODE_VERSION=`cat ./configuration/versions.json | jq '."14"' -r` \
-    --build-arg CHECKSUM=`cat ./configuration/checksums.json | jq '."14"' -r` \
-    -t panascais/node:14 \
-    ./14
+    --build-arg NODE_VERSION=`cat ./configuration/versions.json | jq '."20"' -r` \
+    --build-arg CHECKSUM=`cat ./configuration/checksums.json | jq '."20"' -r` \
+    -t panascais/node:20 \
+    ./20
 ```
 
-**Example for fish and node version 14:**
+**Example for fish and node version 20:**
 
 ```fish
 docker build \
     --build-arg BUILD_DATE=(date -u +"%Y-%m-%dT%H:%M:%SZ") \
     --build-arg VCS_REF=(git rev-parse --short HEAD) \
-    --build-arg NODE_VERSION=(cat ./configuration/versions.json | jq '."14"' -r) \
-    --build-arg CHECKSUM=(cat ./configuration/checksums.json | jq '."14"' -r) \
-    -t panascais/node:14 \
-    ./14
+    --build-arg NODE_VERSION=(cat ./configuration/versions.json | jq '."20"' -r) \
+    --build-arg CHECKSUM=(cat ./configuration/checksums.json | jq '."20"' -r) \
+    -t panascais/node:20 \
+    ./20
 ```
 
 ## Contributors
