@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     name: deploy-${{ matrix.node }}
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    if: '!contains(github.event.head_commit.message, "[skip ci]")'
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
