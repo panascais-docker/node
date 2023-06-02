@@ -2,7 +2,7 @@ FROM node:20-alpine as builder
 
 RUN apk add --no-cache binutils curl
 RUN strip /usr/local/bin/node \
-    && curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@8 \
+    && curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm \
     # smoke tests
     && node -v \
     && pnpm -v
