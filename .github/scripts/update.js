@@ -24,7 +24,8 @@ const url = {
   18: "https://nodejs.org/dist/latest-v18.x/",
   19: "https://nodejs.org/dist/latest-v19.x/",
   20: "https://nodejs.org/dist/latest-v20.x/",
-  lts: "https://nodejs.org/dist/latest-v16.x/",
+  21: "https://nodejs.org/dist/latest-v21.x/",
+  lts: "https://nodejs.org/dist/latest-v20.x/",
   latest: "https://nodejs.org/dist/latest/",
 };
 
