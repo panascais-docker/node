@@ -15,15 +15,15 @@ jobs:
         node: [8, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, latest, lts]
     steps:
       - name: pull repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         id: repository
 
       - name: setup docker qemu
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         id: qemu
 
       - name: setup docker buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         id: buildx
 
       - name: install dependencies
