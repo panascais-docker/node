@@ -2,7 +2,6 @@ FROM alpine:3.18 as builder
 
 ARG BUILD_DATE
 ARG VCS_REF
-ARG NODE_VERSION 22.0.0
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
@@ -64,12 +63,12 @@ RUN addgroup -g 1000 node \
     gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$key" || \
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key" ; \
     done \
-    && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz" \
-    && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
+    && curl -fsSLO --compressed "https://nodejs.org/dist/v22.0.0/node-v22.0.0.tar.xz" \
+    && curl -fsSLO --compressed "https://nodejs.org/dist/v22.0.0/SHASUMS256.txt.asc" \
     && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
-    && grep " node-v$NODE_VERSION.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
-    && tar -xf "node-v$NODE_VERSION.tar.xz" \
-    && cd "node-v$NODE_VERSION" \
+    && grep " node-v22.0.0.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
+    && tar -xf "node-v22.0.0.tar.xz" \
+    && cd "node-v22.0.0" \
     && mkdir -p /usr/local/sbin \
     && ln -s /usr/bin/python3 /usr/local/sbin/python3.9 \
     && ./configure \
