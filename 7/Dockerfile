@@ -11,7 +11,7 @@ RUN strip /usr/local/bin/node \
     && node -v \
     && pnpm -v
 
-FROM alpine:3.18 as packager
+FROM alpine:3.19 as packager
 
 ARG BUILD_DATE
 ARG VCS_REF
