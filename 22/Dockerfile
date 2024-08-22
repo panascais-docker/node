@@ -23,14 +23,16 @@ RUN addgroup -g 1000 node \
     esac \
     && apk add --no-cache --virtual .build-deps-full \
     bash \
+    binutils-gold \
     ccache \
     g++ \
     gcc \
     gnupg \
-    libgcc \
     libc6-compat \
+    libgcc \
     linux-headers \
     make \
+    py-setuptools \
     python3 \
     xz \
     # gpg keys listed at https://github.com/nodejs/node#release-keys

@@ -7,7 +7,7 @@ on:
 jobs:
   update:
     name: update
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-24.04
     outputs:
       main: ${{ steps.update.outputs.result }}
     steps:
@@ -20,13 +20,13 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-        run: cd .github/scripts && bun install
 
       - name: run update script
         id: update
         run: |
+          cd .github/scripts/ && bun install && cd ../../
           result=$(bun run .github/scripts/update.ts)
-          echo "::set-output name=result::$result"
+          echo "result=$result" >> $GITHUB_OUTPUT
 
       - name: commit the changes
         id: commit
@@ -43,12 +43,11 @@ jobs:
     name: deploy-${{ matrix.node }}
     needs: [ update ]
     if: needs.update.outputs.main == 'continue'
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-24.04
     timeout-minutes: 360
     strategy:
       matrix:
-        node: [ 20 ]
-        # node: [ 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, latest, lts ]
+        node: [ 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, latest, lts ]
     steps:
       - name: pull repository
         uses: actions/checkout@v4
@@ -76,17 +75,20 @@ jobs:
         id: build
         working-directory: ./${{ matrix.node }}
         run: |
+          export NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r`;
+          echo "NODE_VERSION = $NODE_VERSION";
+
           echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
           echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
           echo "${CONTAINER_REGISTRY_TOKEN}" | docker login ghcr.io -u "${CONTAINER_REGISTRY_USERNAME}" --password-stdin
 
           docker buildx create --use
-
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --push \
             --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
             --build-arg VCS_REF=`git rev-parse --short HEAD` \
+            --build-arg NODE_VERSION=$NODE_VERSION \
             -t panascais/node:${{ matrix.node }} \
             -t quay.io/panascais/node:${{ matrix.node }} \
             -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
@@ -102,7 +104,7 @@ jobs:
   notify-ci-node:
     name: notify-ci-node
     needs: [ deploy ]
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-24.04
     steps:
       - name: start ci-node workflow
         id: push-ci-node

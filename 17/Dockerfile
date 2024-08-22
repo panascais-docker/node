@@ -1,4 +1,4 @@
-FROM alpine:3.17 AS builder
+FROM alpine:3.15 AS builder
 
 ARG BUILD_DATE
 ARG NODE_VERSION
