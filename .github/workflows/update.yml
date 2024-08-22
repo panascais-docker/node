@@ -7,7 +7,7 @@ on:
 jobs:
   update:
     name: update
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     outputs:
       main: ${{steps.update.outputs.result}}
     steps:
@@ -46,7 +46,7 @@ jobs:
     name: deploy-${{ matrix.node }}
     needs: [update]
     if: needs.update.outputs.main == 'continue'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     timeout-minutes: 360
     strategy:
       matrix:
@@ -104,7 +104,7 @@ jobs:
   notify-ci-node:
     name: notify-ci-node
     needs: [deploy]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - name: start ci-node workflow
         id: push-ci-node
