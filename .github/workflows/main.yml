@@ -47,7 +47,6 @@ jobs:
 
       - name: build and push the docker container image
         id: build
-        working-directory: ./${{ matrix.node }}
         run: |
           bun install
           bun run build.ts ${{ matrix.node }}
