@@ -15,8 +15,8 @@ jobs:
         id: repository
         uses: actions/checkout@v4
 
-      - name: install dependencies
-        id: dependencies
+      - name: install bun
+        id: bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -24,7 +24,7 @@ jobs:
       - name: run update script
         id: update
         run: |
-          cd .github/scripts/ && bun install && cd ../../
+          cd .github/scripts/ && bun install --frozen-lockfile && cd ../../
           result=$(bun run .github/scripts/update.ts)
           echo "result=$result" >> $GITHUB_OUTPUT
 
@@ -71,28 +71,18 @@ jobs:
         run: |
           git pull origin master
 
+      - name: install bun
+        id: bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: build and push the docker container image
         id: build
         working-directory: ./${{ matrix.node }}
         run: |
-          export NODE_VERSION=`cat ../configuration/versions.json | jq '."${{ matrix.node }}"' -r`;
-          echo "NODE_VERSION = $NODE_VERSION";
-
-          echo "${DOCKER_REGISTRY_TOKEN}" | docker login -u "${DOCKER_REGISTRY_USERNAME}" --password-stdin
-          echo "${QUAY_REGISTRY_TOKEN}" | docker login quay.io -u "${QUAY_REGISTRY_USERNAME}" --password-stdin
-          echo "${CONTAINER_REGISTRY_TOKEN}" | docker login ghcr.io -u "${CONTAINER_REGISTRY_USERNAME}" --password-stdin
-
-          docker buildx create --use
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --push \
-            --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-            --build-arg VCS_REF=`git rev-parse --short HEAD` \
-            --build-arg NODE_VERSION=$NODE_VERSION \
-            -t panascais/node:${{ matrix.node }} \
-            -t quay.io/panascais/node:${{ matrix.node }} \
-            -t ghcr.io/panascais-docker/node/node:${{ matrix.node }} \
-            .;
+          bun install --frozen-lockfile
+          bun run build.ts ${{ matrix.node }}
         env:
           CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
           CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}

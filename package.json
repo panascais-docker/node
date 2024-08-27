@@ -1,0 +1,11 @@
+{
+  "name": "node",
+  "module": "build.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "1.1.8"
+  },
+  "peerDependencies": {
+    "typescript": "5.5.4"
+  }
+}
