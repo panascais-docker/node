@@ -37,12 +37,12 @@ LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.opencontainers.image.source="https://github.com/panascais-docker/node" \
     maintainer="Panascais Open Source <oss@panascais.net>"
 
-COPY --from=builder /usr/lib/libgcc_s.so.1 /usr/lib/
-COPY --from=builder /usr/lib/libstdc++.so.6 /usr/lib/
-COPY --from=builder /usr/local/bin/node /usr/local/bin/
-COPY --from=builder /usr/local/bin/pnpm /usr/local/bin/
-COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/
-COPY --from=builder /usr/local/pnpm-global /usr/local/
+COPY --from=builder /usr/lib/libgcc_s.so.1      /usr/lib/libgcc_s.so.1
+COPY --from=builder /usr/lib/libstdc++.so.6     /usr/lib/libstdc++.so.6
+COPY --from=builder /usr/local/bin/node         /usr/local/bin/node
+COPY --from=builder /usr/local/bin/pnpm         /usr/local/bin/pnpm
+COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=builder /usr/local/pnpm-global      /usr/local/pnpm-global
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
