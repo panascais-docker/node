@@ -1,16 +1,30 @@
 // mapping to lookup the latest checksum & version by major version
 const distributions: Record<string, string> = {
-    12: 'https://nodejs.org/dist/latest-v12.x/',
-    14: 'https://nodejs.org/dist/latest-v14.x/',
-    15: 'https://nodejs.org/dist/latest-v15.x/',
-    16: 'https://nodejs.org/dist/latest-v16.x/',
-    17: 'https://nodejs.org/dist/latest-v17.x/',
-    18: 'https://nodejs.org/dist/latest-v18.x/',
-    19: 'https://nodejs.org/dist/latest-v19.x/',
-    20: 'https://nodejs.org/dist/latest-v20.x/',
-    21: 'https://nodejs.org/dist/latest-v21.x/',
-    22: 'https://nodejs.org/dist/latest-v22.x/',
+    '12': 'https://nodejs.org/dist/latest-v12.x/',
+    '14': 'https://nodejs.org/dist/latest-v14.x/',
+    '15': 'https://nodejs.org/dist/latest-v15.x/',
+    '16': 'https://nodejs.org/dist/latest-v16.x/',
+    '17': 'https://nodejs.org/dist/latest-v17.x/',
+    '18': 'https://nodejs.org/dist/latest-v18.x/',
+    '19': 'https://nodejs.org/dist/latest-v19.x/',
+    '20': 'https://nodejs.org/dist/latest-v20.x/',
+    '21': 'https://nodejs.org/dist/latest-v21.x/',
+    '22': 'https://nodejs.org/dist/latest-v22.x/',
 };
+
+// mapping to lookup the compatible pnpm version by major version
+const pnpm: Record<string, string> = {
+    '12': '6',
+    '14': '7',
+    '15': '7',
+    '16': '8',
+    '17': '8',
+    '18': '9',
+    '19': '9',
+    '20': '9',
+    '21': '9',
+    '22': '9',
+}
 
 // utilities
 
@@ -53,21 +67,23 @@ for (const distribution of await fetchJson<{ version: string, lts: boolean }[]>(
 
     if (!distributions.latest && !distribution.lts) {
         distributions.latest = distributions[major]
+        pnpm.latest = pnpm[major]
         continue
     }
 
     if (!distributions.lts && distribution.lts) {
         distributions.lts = distributions[major]
+        pnpm.lts = pnpm[major]
         break;
     }
 }
 
-
 const checksumsFile = './configuration/checksums.json';
-const versionsFile = './configuration/versions.json';
+const pnpmFile = './configuration/pnpm.json';
 const tagsFile = './configuration/tags.json';
+const versionsFile = './configuration/versions.json';
 
-const [checksumsBefore, versionsBefore, tagsBefore] = await Promise.all([Bun.file(checksumsFile).json(), Bun.file(versionsFile).json(), Bun.file(tagsFile).json()])
+const [checksumsBefore, pnpmBefore, tagsBefore, versionsBefore] = await Promise.all([Bun.file(checksumsFile).json(), Bun.file(pnpmFile).json(), Bun.file(tagsFile).json(), Bun.file(versionsFile).json()])
 
 // for each major mapping we will figure out the checksum & version
 const latestByMajor = await Promise.all(Object.entries(distributions).map(async ([distribution, base]) => {
@@ -93,17 +109,18 @@ const latestByMajor = await Promise.all(Object.entries(distributions).map(async 
 }))
 
 // we combine checksum & version results into a record
-const { checksums: checksumsAfter, versions: versionsAfter, tags: tagsAfter } = latestByMajor.reduce((document, [major, { checksum, version, tag }]) => {
+const { checksums: checksumsAfter, pnpm: pnpmAfter, tags: tagsAfter, versions: versionsAfter } = latestByMajor.reduce((document, [major, { checksum, version, tag }]) => {
     document.checksums[major] = checksum;
-    document.versions[major] = version;
+    document.pnpm[major] = pnpm[major];
     document.tags[major] = tag;
+    document.versions[major] = version;
     return document;
-}, { checksums: {} as Record<string, string>, versions: {} as Record<string, string>, tags: {} as Record<string, string> });
+}, { checksums: {} as Record<string, string>, pnpm: {} as Record<string, string>, tags: {} as Record<string, string>, versions: {} as Record<string, string> });
 
 // compare checksums & versions from before & after, if they've changed print "continue", otherwise print "exit" to instruct actions to proceed or skip
-if (Bun.deepEquals(checksumsBefore, checksumsAfter, true) && Bun.deepEquals(versionsBefore, versionsAfter, true) && Bun.deepEquals(tagsBefore, tagsAfter, true)) {
+if (Bun.deepEquals(checksumsBefore, checksumsAfter, true) && Bun.deepEquals(pnpmBefore, pnpmAfter, true) && Bun.deepEquals(tagsBefore, tagsAfter, true) && Bun.deepEquals(versionsBefore, versionsAfter, true)) {
     console.log('exit');
 } else {
-    await Promise.all([writeJson(checksumsFile, checksumsAfter), writeJson(versionsFile, versionsAfter), writeJson(tagsFile, tagsAfter)])
+    await Promise.all([writeJson(checksumsFile, checksumsAfter), writeJson(pnpmFile, pnpmAfter), writeJson(tagsFile, tagsAfter), writeJson(versionsFile, versionsAfter)])
     console.log('continue');
 }
