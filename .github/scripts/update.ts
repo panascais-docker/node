@@ -62,36 +62,48 @@ for (const distribution of await fetchJson<{ version: string, lts: boolean }[]>(
     }
 }
 
+
+const checksumsFile = './configuration/checksums.json';
+const versionsFile = './configuration/versions.json';
+const tagsFile = './configuration/tags.json';
+
+const [checksumsBefore, versionsBefore, tagsBefore] = await Promise.all([Bun.file(checksumsFile).json(), Bun.file(versionsFile).json(), Bun.file(tagsFile).json()])
+
 // for each major mapping we will figure out the checksum & version
 const latestByMajor = await Promise.all(Object.entries(distributions).map(async ([distribution, base]) => {
     const url = `${base}SHASUMS256.txt`
     const pattern = '(?<checksum>[0-9a-f]{64})\\s+node-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)[^\\s]+'
 
-    const { groups: results } = new RegExp(pattern, 'gm').exec(await fetchText(url)) ?? {}
-    if (!results) {
+    const { groups } = new RegExp(pattern, 'gm').exec(await fetchText(url)) ?? {}
+    if (!groups) {
         throw new Error(`Unable to parse content at '${url}'`)
     }
 
-    const { checksum, major, minor, patch } = results
-    return [distribution, { checksum, version: [major, minor, patch].join('.') }] as const
+    const { checksum, major, minor, patch } = groups
+    const version = [major, minor, patch].join('.');
+
+    const { results } = await fetchJson<{ results: { name: string }[] }>(`https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`)
+    const [first] = results ?? [];
+    const { name: tag } = first ?? { name: tagsBefore[distribution] as string | undefined }
+    if (!tag?.length) {
+        throw new Error(`Unable to find latest docker tag for '${distribution}'`)
+    }
+
+    return [distribution, { checksum, version, tag }] as const
 }))
 
 // we combine checksum & version results into a record
-const { checksums: checksumsAfter, versions: versionsAfter } = latestByMajor.reduce((document, [major, { checksum, version }]) => {
+const { checksums: checksumsAfter, versions: versionsAfter, tags: tagsAfter } = latestByMajor.reduce((document, [major, { checksum, version, tag }]) => {
     document.checksums[major] = checksum;
     document.versions[major] = version;
+    document.tags[major] = tag;
     return document;
-}, { checksums: {} as Record<string, string>, versions: {} as Record<string, string> });
-
-const checksumsFile = './configuration/checksums.json';
-const versionsFile = './configuration/versions.json';
-
-const [checksumsBefore, versionsBefore] = await Promise.all([Bun.file(checksumsFile).json(), Bun.file(versionsFile).json()])
+}, { checksums: {} as Record<string, string>, versions: {} as Record<string, string>, tags: {} as Record<string, string> });
 
 // compare checksums & versions from before & after, if they've changed print "continue", otherwise print "exit" to instruct actions to proceed or skip
-if (Bun.deepEquals(checksumsBefore, checksumsAfter, true) && Bun.deepEquals(versionsBefore, versionsAfter, true)) {
+if (Bun.deepEquals(checksumsBefore, checksumsAfter, true) && Bun.deepEquals(versionsBefore, versionsAfter, true) && Bun.deepEquals(tagsBefore, tagsAfter, true)) {
     console.log('exit');
 } else {
-    await Promise.all([writeJson(checksumsFile, checksumsAfter), writeJson(versionsFile, versionsAfter)])
+    await Promise.all([writeJson(checksumsFile, checksumsAfter), writeJson(versionsFile, versionsAfter), writeJson(tagsFile, tagsAfter)])
     console.log('continue');
 }
