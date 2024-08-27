@@ -103,7 +103,7 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
         --build-arg NODE_VERSION=${patch} \
         --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
         --push \
-        --platform linux/amd64,linux/arm64 \
+        --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x \
         --progress=plain \
         -t ghcr.io/panascais-docker/node/node:${distribution} \
         -t ghcr.io/panascais-docker/node/node:${major} \
