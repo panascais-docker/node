@@ -94,16 +94,25 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
         QUAY_REGISTRY_USERNAME,
     } = Bun.env;
 
-    await $`echo ${CONTAINER_REGISTRY_TOKEN} | docker login ghcr.io -u ${CONTAINER_REGISTRY_USERNAME} --password-stdin`;
-    await $`echo ${DOCKER_REGISTRY_TOKEN} | docker login -u ${DOCKER_REGISTRY_USERNAME} --password-stdin`;
-    await $`echo ${QUAY_REGISTRY_TOKEN} | docker login quay.io -u ${QUAY_REGISTRY_USERNAME} --password-stdin`;
-
+    // hack to pull first without authentication to avoid even more rate limits
     await $`docker buildx create --use && docker buildx build \
         --build-arg BUILD_DATE=${await $`date -u +"%Y-%m-%dT%H:%M:%SZ"`.text()} \
         --build-arg NODE_VERSION=${patch} \
         --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
+        --platform linux/amd64,linux/arm64 \
+        --progress=plain \
+        ./${distribution}`;
+
+    await $`echo ${CONTAINER_REGISTRY_TOKEN} | docker login ghcr.io -u ${CONTAINER_REGISTRY_USERNAME} --password-stdin`;
+    await $`echo ${DOCKER_REGISTRY_TOKEN} | docker login -u ${DOCKER_REGISTRY_USERNAME} --password-stdin`;
+    await $`echo ${QUAY_REGISTRY_TOKEN} | docker login quay.io -u ${QUAY_REGISTRY_USERNAME} --password-stdin`;
+
+    await $`docker buildx build \
+        --build-arg BUILD_DATE=${await $`date -u +"%Y-%m-%dT%H:%M:%SZ"`.text()} \
+        --build-arg NODE_VERSION=${patch} \
+        --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
         --push \
-        --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x \
+        --platform linux/amd64,linux/arm64 \
         --progress=plain \
         -t ghcr.io/panascais-docker/node/node:${distribution} \
         -t panascais/node:${distribution} \
