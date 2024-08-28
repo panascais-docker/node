@@ -115,8 +115,17 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
         --platform linux/amd64,linux/arm64 \
         --progress=plain \
         -t ghcr.io/panascais-docker/node/node:${distribution} \
+        -t ghcr.io/panascais-docker/node/node:${major} \
+        -t ghcr.io/panascais-docker/node/node:${minor} \
+        -t ghcr.io/panascais-docker/node/node:${patch} \
         -t panascais/node:${distribution} \
+        -t panascais/node:${major} \
+        -t panascais/node:${minor} \
+        -t panascais/node:${patch} \
         -t quay.io/panascais/node:${distribution} \
+        -t quay.io/panascais/node:${major} \
+        -t quay.io/panascais/node:${minor} \
+        -t quay.io/panascais/node:${patch} \
         ./${distribution}`;
 } else {
     await $`docker buildx build \
