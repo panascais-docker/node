@@ -37,17 +37,17 @@ LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.opencontainers.image.source="https://github.com/panascais-docker/node" \
     maintainer="Panascais Open Source <oss@panascais.net>"
 
-COPY --from=builder /usr/lib/libgcc_s.so.1      /usr/lib/libgcc_s.so.1
-COPY --from=builder /usr/lib/libstdc++.so.6     /usr/lib/libstdc++.so.6
 COPY --from=builder /usr/local/bin/node         /usr/local/bin/node
 COPY --from=builder /usr/local/bin/pnpm         /usr/local/bin/pnpm
 COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=builder /usr/local/pnpm-global      /usr/local/pnpm-global
+COPY --from=builder /usr/local/share            /usr/local/share
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
+    && apk add --no-cache --update libc6-compat libstdc++ \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
     && ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx;
