@@ -26,6 +26,8 @@ const pnpm: Record<string, string> = {
     '22': '9',
 }
 
+const badVersionBlacklist = ['22.7.0']
+
 // utilities
 
 const fetchJson = async <T>(url: string) => {
@@ -97,6 +99,10 @@ const latestByMajor = await Promise.all(Object.entries(distributions).map(async 
 
     const { checksum, major, minor, patch } = groups
     const version = [major, minor, patch].join('.');
+
+    if (badVersionBlacklist.includes(version)) {
+        return [distribution, { checksum: checksumsBefore[distribution], version: versionsBefore[distribution], tag: tagsBefore[distribution] }] as const
+    }
 
     const { results } = await fetchJson<{ results: { name: string }[] }>(`https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`)
     const [first] = results ?? [];
