@@ -88,7 +88,7 @@ const [checksumsBefore, pnpmBefore, tagsBefore, versionsBefore] = await Promise.
 // for each major mapping we will figure out the checksum & version
 const latestByMajor = await Promise.all(Object.entries(distributions).map(async ([distribution, base]) => {
     const url = `${base}SHASUMS256.txt`
-    const pattern = '(?<checksum>[0-9a-f]{64})\\s+node-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)[^\\s]+'
+    const pattern = '^(?<checksum>[0-9a-f]{64})\\s+node-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.tar\\.xz$'
 
     const { groups } = new RegExp(pattern, 'gm').exec(await fetchText(url)) ?? {}
     if (!groups) {
