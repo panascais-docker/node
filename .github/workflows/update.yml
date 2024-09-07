@@ -24,7 +24,7 @@ jobs:
       - name: run update script
         id: update
         run: |
-          cd .github/scripts/ && bun install && cd ../../
+          cd .github/scripts/ && bun install --frozen-lockfile && cd ../../
           result=$(bun run .github/scripts/update.ts)
           echo "result=$result" >> $GITHUB_OUTPUT
 
@@ -34,8 +34,9 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add configuration/versions.json
           git add configuration/checksums.json
+          git add configuration/tags.json
+          git add configuration/versions.json
           git commit -m "Update configuration & docker files"
           git push origin master
 
@@ -81,7 +82,7 @@ jobs:
       - name: build and push the docker container image
         id: build
         run: |
-          bun install
+          bun install --frozen-lockfile
           bun run build.ts ${{ matrix.node }}
         env:
           CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}

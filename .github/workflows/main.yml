@@ -49,7 +49,7 @@ jobs:
       - name: build and push the docker container image
         id: build
         run: |
-          bun install
+          bun install --frozen-lockfile
           bun run build.ts ${{ matrix.node }}
         env:
           CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
