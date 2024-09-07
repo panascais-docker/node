@@ -24,7 +24,7 @@ jobs:
       - name: run update script
         id: update
         run: |
-          cd .github/scripts/ && bun install --frozen-lockfile && cd ../../
+          cd .github/scripts/ && bun install && cd ../../
           result=$(bun run .github/scripts/update.ts)
           echo "result=$result" >> $GITHUB_OUTPUT
 
@@ -82,7 +82,7 @@ jobs:
       - name: build and push the docker container image
         id: build
         run: |
-          bun install --frozen-lockfile
+          bun install
           bun run build.ts ${{ matrix.node }}
         env:
           CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}

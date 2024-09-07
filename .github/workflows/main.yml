@@ -1,70 +1,70 @@
 name: main
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 0'
-  push:
-    branches:
-      - master
+    workflow_dispatch:
+    schedule:
+        - cron: '0 0 * * 0'
+    push:
+        branches:
+            - master
 
 jobs:
-  deploy:
-    name: ${{ matrix.node }}
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 360
-    strategy:
-      max-parallel: 4
-      matrix:
-        node: [ 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, latest, lts ]
-    steps:
-      - name: pull repository
-        uses: actions/checkout@v4
-        id: repository
+    deploy:
+        name: ${{ matrix.node }}
+        if: "!contains(github.event.head_commit.message, '[skip ci]')"
+        runs-on: ubuntu-24.04
+        timeout-minutes: 360
+        strategy:
+            max-parallel: 4
+            matrix:
+                node: [12, 14, 15, 16, 17, 18, 19, 20, 21, 22, latest, lts]
+        steps:
+            - name: pull repository
+              uses: actions/checkout@v4
+              id: repository
 
-      - name: setup docker qemu
-        uses: docker/setup-qemu-action@v3
-        id: qemu
+            - name: setup docker qemu
+              uses: docker/setup-qemu-action@v3
+              id: qemu
 
-      - name: setup docker buildx
-        uses: docker/setup-buildx-action@v3
-        id: buildx
+            - name: setup docker buildx
+              uses: docker/setup-buildx-action@v3
+              id: buildx
 
-      - name: install dependencies
-        id: dependencies
-        run: |
-          sudo apt install jq -y
+            - name: install dependencies
+              id: dependencies
+              run: |
+                  sudo apt install jq -y
 
-      - name: update repository
-        id: update-repository
-        run: |
-          git pull origin master
+            - name: update repository
+              id: update-repository
+              run: |
+                  git pull origin master
 
-      - name: install bun
-        id: bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+            - name: install bun
+              id: bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
 
-      - name: build and push the docker container image
-        id: build
-        run: |
-          bun install --frozen-lockfile
-          bun run build.ts ${{ matrix.node }}
-        env:
-          CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
-          CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
-          DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
-          DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
-          QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
-          QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
+            - name: build and push the docker container image
+              id: build
+              run: |
+                  bun install
+                  bun run build.ts ${{ matrix.node }}
+              env:
+                  CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+                  CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+                  DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+                  DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+                  QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
+                  QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
 
-  notify-ci-node:
-    name: notify-ci-node
-    needs: [ deploy ]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: start ci-node workflow
-        id: push-ci-node
-        run: |
-          curl -XPOST -u "${{ secrets.PANASCAIS_CI_NODE_USERNAME}}:${{secrets.PANASCAIS_CI_NODE_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/panascais-docker/ci-node/actions/workflows/main.yml/dispatches --data '{"ref": "master"}';
+    notify-ci-node:
+        name: notify-ci-node
+        needs: [deploy]
+        runs-on: ubuntu-24.04
+        steps:
+            - name: start ci-node workflow
+              id: push-ci-node
+              run: |
+                  curl -XPOST -u "${{ secrets.PANASCAIS_CI_NODE_USERNAME}}:${{secrets.PANASCAIS_CI_NODE_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/panascais-docker/ci-node/actions/workflows/main.yml/dispatches --data '{"ref": "master"}';
