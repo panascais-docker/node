@@ -26,7 +26,7 @@ const pnpm: Record<string, string> = {
     '22': '9',
 }
 
-const badVersionBlacklist = ['22.7.0']
+const badVersionBlacklist = ['22.7.0', '22.8.0']
 
 // utilities
 
