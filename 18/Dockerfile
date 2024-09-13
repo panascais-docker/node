@@ -47,7 +47,8 @@ COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
-    && apk add --no-cache --update libc6-compat libstdc++ \
+    && apk add --no-cache --update libc6-compat libstdc++ ca-certificates \
+    && update-ca-certificates \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
     && ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx;
