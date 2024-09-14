@@ -51,7 +51,12 @@ RUN addgroup -g 1000 node \
     && update-ca-certificates \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
     && ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
-    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx;
+    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    # smoke tests
+    && node --version \
+    && pnpm --version \
+    && which node \
+    && which pnpm
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "node" ]
