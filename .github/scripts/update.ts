@@ -26,7 +26,9 @@ const pnpm: Record<string, string> = {
     '22': '9',
 }
 
-const badVersionBlacklist = ['22.7.0', '22.8.0']
+const architectures = ['amd64', 'arm64'];
+
+const badVersionBlacklist = ['22.7.0', '22.8.0'];
 
 // utilities
 
@@ -61,6 +63,19 @@ const extractMajor = (version: string) => {
 
 const writeJson = async  <T>(file: string, json: T) => {
     return Bun.write(file, `${JSON.stringify(json, undefined, 4)}\n`, { createPath: true })
+}
+
+const hasArchitecture = (images: { architecture: string }[], architecture: string) => {
+    for (const image of images) {
+        if (image.architecture === architecture) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const hasArchitectures = (images: { architecture: string }[]) => {
+    return architectures.every(architecture => hasArchitecture(images, architecture))
 }
 
 // we extend the lookup table by dynamically detecting what is currently the "latest" & "lts" release
@@ -104,8 +119,13 @@ const latestByMajor = await Promise.all(Object.entries(distributions).map(async 
         return [distribution, { checksum: checksumsBefore[distribution], version: versionsBefore[distribution], tag: tagsBefore[distribution] }] as const
     }
 
-    const { results } = await fetchJson<{ results: { name: string }[] }>(`https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`)
+    const { results } = await fetchJson<{ results: { name: string, images: { architecture: string }[] }[] }>(`https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`)
     const [first] = results ?? [];
+
+    if (!hasArchitectures(first.images)) {
+        return [distribution, { checksum: checksumsBefore[distribution], version: versionsBefore[distribution], tag: tagsBefore[distribution] }] as const
+    }
+
     const { name: tag } = first ?? { name: tagsBefore[distribution] as string | undefined }
     if (!tag?.length) {
         throw new Error(`Unable to find latest docker tag for '${distribution}'`)
