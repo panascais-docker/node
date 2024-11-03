@@ -58,9 +58,10 @@ jobs:
                   git add ${{ matrix.node }}/Dockerfile
 
                   if git diff --cached --quiet; then
-                    echo "No changes in the Dockerfile. Skipping commit and push."
+                    echo "No changes in Dockerfile, skipping…"
                   else
                     git commit -m "Update ${{ matrix.node }} Dockerfile"
+                    git status
                     git pull origin master --rebase
                     git push origin master
                   fi
