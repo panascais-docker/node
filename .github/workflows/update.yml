@@ -34,11 +34,15 @@ jobs:
               run: |
                   git config user.name 'github-actions[bot]'
                   git config user.email 'github-actions[bot]@users.noreply.github.com'
-                  git add configuration/checksums.json
-                  git add configuration/tags.json
-                  git add configuration/versions.json
-                  git commit -m "Update configuration & docker files"
-                  git push origin master
+
+                  git add configuration/
+
+                  if git diff --cached --quiet; then
+                    echo "No changes in configuration files, skipping…"
+                  else
+                    git commit -m "Update configuration files"
+                    git push origin master
+                  fi
 
     deploy:
         name: ${{ matrix.node }}

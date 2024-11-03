@@ -51,6 +51,19 @@ jobs:
               run: |
                   bun install
                   bun run build.ts ${{ matrix.node }}
+
+                  git config user.name 'github-actions[bot]'
+                  git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+                  git add ${{ matrix.node }}/Dockerfile
+
+                  if git diff --cached --quiet; then
+                    echo "No changes in the Dockerfile. Skipping commit and push."
+                  else
+                    git commit -m "Update ${{ matrix.node }} Dockerfile"
+                    git pull origin master --rebase
+                    git push origin master
+                  fi
               env:
                   CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
                   CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
