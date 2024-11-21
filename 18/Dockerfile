@@ -1,4 +1,4 @@
-FROM node:18.20.4-alpine3.20 AS builder
+FROM node:18.20.5-alpine3.20 AS builder
 
 RUN apk add --no-cache --update binutils curl
 RUN yes | strip /usr/local/bin/node || true \
