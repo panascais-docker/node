@@ -134,8 +134,14 @@ const latestByMajor = await Promise.all(Object.entries(distributions).map(async 
         return [distribution, { checksum: checksumsBefore[distribution], distribution: distributionsBefore[distribution], version: versionsBefore[distribution], tag: tagsBefore[distribution] }] as const
     }
 
-    const { results } = await fetchJson<{ results: { name: string, images: { architecture: string }[] }[] }>(`https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`)
-    const [first] = results ?? [];
+    const dockerHubUrl = `https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`;
+
+    const { results = [] } = await fetchJson<{ results: { name: string, images: { architecture: string }[] }[] }>(dockerHubUrl)
+    const [first = { name: '', images: [] }] = results
+
+    if (!first) {
+        console.log({ results, distribution, base, url, dockerHubUrl })
+    }
 
     if (!hasArchitectures(first.images)) {
         return [distribution, { checksum: checksumsBefore[distribution], distribution: distributionsBefore[distribution], version: versionsBefore[distribution], tag: tagsBefore[distribution] }] as const
