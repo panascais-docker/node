@@ -10,7 +10,7 @@ RUN yes | strip /usr/local/bin/node || true \
     && which node \
     && which pnpm
 
-FROM alpine:3.20 AS packager
+FROM alpine:3.21 AS packager
 
 ARG BUILD_DATE
 ARG NODE_VERSION
