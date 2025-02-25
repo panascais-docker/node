@@ -3,7 +3,7 @@ FROM node:20.18.3-alpine3.21 AS builder
 RUN apk add --no-cache --update binutils curl
 RUN yes | strip /usr/local/bin/node || true \
     && yes | ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
-    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@9 \
+    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@10 \
     # smoke tests
     && node --version \
     && pnpm --version \
