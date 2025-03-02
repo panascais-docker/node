@@ -1,9 +1,9 @@
-FROM node:23.8.0-alpine3.21 AS builder
+FROM node:23.9.0-alpine3.21 AS builder
 
 RUN apk add --no-cache --update binutils curl
 RUN yes | strip /usr/local/bin/node || true \
     && yes | ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
-    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@10 \
+    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@9 \
     # smoke tests
     && node --version \
     && pnpm --version \
