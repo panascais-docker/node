@@ -10,7 +10,7 @@ RUN yes | strip /usr/local/bin/node || true \
     && which node \
     && which pnpm
 
-FROM alpine:3.21 AS packager
+FROM alpine:3.22 AS packager
 
 ARG BUILD_DATE
 ARG NODE_VERSION
@@ -47,7 +47,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
-    && apk add --no-cache --update libc6-compat libstdc++ ca-certificates \
+    && apk add --no-cache --update ca-certificates libc6-compat libstdc++ \
     && update-ca-certificates \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
     && ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
