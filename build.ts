@@ -62,7 +62,7 @@ for (const line of dockerfile.split('\n')) {
                 break;
             }
             case 1: {
-                lines.push(`FROM alpine:3.22 AS packager`);
+                lines.push(`FROM alpine:3.23 AS packager`);
                 break;
             }
             default: {
