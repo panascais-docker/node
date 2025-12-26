@@ -19,7 +19,7 @@ jobs:
               id: bun
               uses: oven-sh/setup-bun@v2
               with:
-                  bun-version: 1.3.1
+                  bun-version: 1.2.22
 
             - name: run update script
               id: update
@@ -81,7 +81,7 @@ jobs:
               id: bun
               uses: oven-sh/setup-bun@v2
               with:
-                  bun-version: 1.3.1
+                  bun-version: 1.2.22
 
             - name: build and push the docker container image
               id: build
