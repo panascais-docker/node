@@ -32,7 +32,7 @@ const pnpm: Record<string, string> = {
     '24': '11',
     '25': '11',
     '26': '11',
-}
+};
 
 const architectures = ['amd64', 'arm64'];
 
@@ -47,7 +47,7 @@ const fetchJson = async <T>(url: string) => {
     }
 
     const json = await response.json();
-    return json as T
+    return json as T;
 };
 
 const fetchText = async (url: string) => {
@@ -61,17 +61,17 @@ const fetchText = async (url: string) => {
 };
 
 const extractMajor = (version: string) => {
-    const [major] = version.slice(1).split('.')
+    const [major] = version.slice(1).split('.');
     if (major?.trim().length === 0) {
-        throw new Error(`Unable to extract major version from '${version}'`)
+        throw new Error(`Unable to extract major version from '${version}'`);
     }
 
-    return major
-}
+    return major;
+};
 
-const writeJson = async  <T>(file: string, json: T) => {
-    return Bun.write(file, `${JSON.stringify(json, undefined, 4)}\n`, { createPath: true })
-}
+const writeJson = async <T>(file: string, json: T) => {
+    return Bun.write(file, `${JSON.stringify(json, undefined, 4)}\n`, { createPath: true });
+};
 
 const hasArchitecture = (images: { architecture: string }[], architecture: string) => {
     for (const image of images) {
@@ -80,11 +80,11 @@ const hasArchitecture = (images: { architecture: string }[], architecture: strin
         }
     }
     return false;
-}
+};
 
 const hasArchitectures = (images: { architecture: string }[]) => {
-    return architectures.every(architecture => hasArchitecture(images, architecture))
-}
+    return architectures.every(architecture => hasArchitecture(images, architecture));
+};
 
 const checksumsFile = './configuration/checksums.json';
 const distributionsFile = './configuration/distributions.json';
@@ -92,11 +92,17 @@ const pnpmFile = './configuration/pnpm.json';
 const tagsFile = './configuration/tags.json';
 const versionsFile = './configuration/versions.json';
 
-const [checksumsBefore, distributionsBefore, pnpmBefore, tagsBefore, versionsBefore] = await Promise.all([Bun.file(checksumsFile).json(), Bun.file(distributionsFile).json(), Bun.file(pnpmFile).json(), Bun.file(tagsFile).json(), Bun.file(versionsFile).json()])
+const [checksumsBefore, distributionsBefore, pnpmBefore, tagsBefore, versionsBefore] = await Promise.all([
+    Bun.file(checksumsFile).json(),
+    Bun.file(distributionsFile).json(),
+    Bun.file(pnpmFile).json(),
+    Bun.file(tagsFile).json(),
+    Bun.file(versionsFile).json(),
+]);
 
 // we extend the lookup table by dynamically detecting what is currently the "latest" & "lts" release
-for (const distribution of await fetchJson<{ version: string, lts: boolean }[]>('https://nodejs.org/dist/index.json')) {
-    const major = extractMajor(distribution.version)
+for (const distribution of await fetchJson<{ version: string; lts: boolean }[]>('https://nodejs.org/dist/index.json')) {
+    const major = extractMajor(distribution.version);
 
     if (!distributions.latest && !distribution.lts) {
         const distributionChecked = distributions[major] ?? distributionsBefore.latest;
@@ -107,7 +113,7 @@ for (const distribution of await fetchJson<{ version: string, lts: boolean }[]>(
         if (pnpmChecked) {
             pnpm.latest = pnpmChecked;
         }
-        continue
+        continue;
     }
 
     if (!distributions.lts && distribution.lts) {
@@ -124,57 +130,102 @@ for (const distribution of await fetchJson<{ version: string, lts: boolean }[]>(
 }
 
 // for each major mapping we will figure out the checksum & version
-const latestByMajor = await Promise.all(Object.entries(distributions).map(async ([distribution, base]) => {
-    const url = `${base}SHASUMS256.txt`
-    const pattern = '^(?<checksum>[0-9a-f]{64})\\s+node-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.tar\\.xz$'
+const latestByMajor = await Promise.all(
+    Object.entries(distributions).map(async ([distribution, base]) => {
+        const url = `${base}SHASUMS256.txt`;
+        const pattern = '^(?<checksum>[0-9a-f]{64})\\s+node-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.tar\\.xz$';
 
-    const { groups } = new RegExp(pattern, 'gm').exec(await fetchText(url)) ?? {}
-    if (!groups) {
-        throw new Error(`Unable to parse content at '${url}'`)
-    }
+        const { groups } = new RegExp(pattern, 'gm').exec(await fetchText(url)) ?? {};
+        if (!groups) {
+            throw new Error(`Unable to parse content at '${url}'`);
+        }
 
-    const { checksum, major, minor, patch } = groups
-    const version = [major, minor, patch].join('.');
+        const { checksum, major, minor, patch } = groups;
+        const version = [major, minor, patch].join('.');
 
-    if (badVersionBlacklist.includes(version)) {
-        return [distribution, { checksum: checksumsBefore[distribution], distribution: distributionsBefore[distribution], version: versionsBefore[distribution], tag: tagsBefore[distribution] }] as const
-    }
+        if (badVersionBlacklist.includes(version)) {
+            return [
+                distribution,
+                {
+                    checksum: checksumsBefore[distribution],
+                    distribution: distributionsBefore[distribution],
+                    version: versionsBefore[distribution],
+                    tag: tagsBefore[distribution],
+                },
+            ] as const;
+        }
 
-    const dockerHubUrl = `https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`;
+        const dockerHubUrl = `https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`;
 
-    const { results = [] } = await fetchJson<{ results: { name: string, images: { architecture: string }[] }[] }>(dockerHubUrl)
-    const [first = { name: '', images: [] }] = results
+        const { results = [] } = await fetchJson<{ results: { name: string; images: { architecture: string }[] }[] }>(dockerHubUrl);
+        const [first = { name: '', images: [] }] = results;
 
-    if (!first) {
-        console.log({ results, distribution, base, url, dockerHubUrl })
-    }
+        if (!first) {
+            console.log({ results, distribution, base, url, dockerHubUrl });
+        }
 
-    if (!hasArchitectures(first.images)) {
-        return [distribution, { checksum: checksumsBefore[distribution], distribution: distributionsBefore[distribution], version: versionsBefore[distribution], tag: tagsBefore[distribution] }] as const
-    }
+        if (!hasArchitectures(first.images)) {
+            return [
+                distribution,
+                {
+                    checksum: checksumsBefore[distribution],
+                    distribution: distributionsBefore[distribution],
+                    version: versionsBefore[distribution],
+                    tag: tagsBefore[distribution],
+                },
+            ] as const;
+        }
 
-    const { name: tag } = first ?? { name: tagsBefore[distribution] as string | undefined }
-    if (!tag?.length) {
-        throw new Error(`Unable to find latest docker tag for '${distribution}'`)
-    }
+        const { name: tag } = first ?? { name: tagsBefore[distribution] as string | undefined };
+        if (!tag?.length) {
+            throw new Error(`Unable to find latest docker tag for '${distribution}'`);
+        }
 
-    return [distribution, { checksum, distribution: distributions[distribution], version, tag }] as const
-}))
+        return [distribution, { checksum, distribution: distributions[distribution], version, tag }] as const;
+    }),
+);
 
 // we combine checksum & version results into a record
-const { checksums: checksumsAfter, distributions: distributionsAfter, pnpm: pnpmAfter, tags: tagsAfter, versions: versionsAfter } = latestByMajor.reduce((document, [major, { checksum, distribution, version, tag }]) => {
-    document.checksums[major] = checksum;
-    document.distributions[major] = distribution;
-    document.pnpm[major] = pnpm[major];
-    document.tags[major] = tag;
-    document.versions[major] = version;
-    return document;
-}, { checksums: {} as Record<string, string>, distributions: {} as Record<string, string>, pnpm: {} as Record<string, string>, tags: {} as Record<string, string>, versions: {} as Record<string, string> });
+const {
+    checksums: checksumsAfter,
+    distributions: distributionsAfter,
+    pnpm: pnpmAfter,
+    tags: tagsAfter,
+    versions: versionsAfter,
+} = latestByMajor.reduce(
+    (document, [major, { checksum, distribution, version, tag }]) => {
+        document.checksums[major] = checksum;
+        document.distributions[major] = distribution;
+        document.pnpm[major] = pnpm[major];
+        document.tags[major] = tag;
+        document.versions[major] = version;
+        return document;
+    },
+    {
+        checksums: {} as Record<string, string>,
+        distributions: {} as Record<string, string>,
+        pnpm: {} as Record<string, string>,
+        tags: {} as Record<string, string>,
+        versions: {} as Record<string, string>,
+    },
+);
 
 // compare checksums & versions from before & after, if they've changed print "continue", otherwise print "exit" to instruct actions to proceed or skip
-if (Bun.deepEquals(checksumsBefore, checksumsAfter, true) && Bun.deepEquals(distributionsBefore, distributionsAfter, true) && Bun.deepEquals(pnpmBefore, pnpmAfter, true) && Bun.deepEquals(tagsBefore, tagsAfter, true) && Bun.deepEquals(versionsBefore, versionsAfter, true)) {
+if (
+    Bun.deepEquals(checksumsBefore, checksumsAfter, true) &&
+    Bun.deepEquals(distributionsBefore, distributionsAfter, true) &&
+    Bun.deepEquals(pnpmBefore, pnpmAfter, true) &&
+    Bun.deepEquals(tagsBefore, tagsAfter, true) &&
+    Bun.deepEquals(versionsBefore, versionsAfter, true)
+) {
     console.log('exit');
 } else {
-    await Promise.all([writeJson(checksumsFile, checksumsAfter), writeJson(distributionsFile, distributionsAfter), writeJson(pnpmFile, pnpmAfter), writeJson(tagsFile, tagsAfter), writeJson(versionsFile, versionsAfter)])
+    await Promise.all([
+        writeJson(checksumsFile, checksumsAfter),
+        writeJson(distributionsFile, distributionsAfter),
+        writeJson(pnpmFile, pnpmAfter),
+        writeJson(tagsFile, tagsAfter),
+        writeJson(versionsFile, versionsAfter),
+    ]);
     console.log('continue');
 }
