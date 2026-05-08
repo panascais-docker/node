@@ -13,6 +13,7 @@ const distributions: Record<string, string> = {
     '23': 'https://nodejs.org/dist/latest-v23.x/',
     '24': 'https://nodejs.org/dist/latest-v24.x/',
     '25': 'https://nodejs.org/dist/latest-v25.x/',
+    '26': 'https://nodejs.org/dist/latest-v26.x/',
 };
 
 // mapping to lookup the compatible pnpm version by major version
@@ -30,6 +31,7 @@ const pnpm: Record<string, string> = {
     '23': '10',
     '24': '10',
     '25': '10',
+    '26': '11',
 }
 
 const architectures = ['amd64', 'arm64'];
