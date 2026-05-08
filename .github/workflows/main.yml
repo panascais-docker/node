@@ -16,7 +16,7 @@ jobs:
         strategy:
             max-parallel: 4
             matrix:
-                node: [latest, lts, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 12]
+                node: [latest, lts, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 12]
         steps:
             - name: pull repository
               uses: actions/checkout@v4
