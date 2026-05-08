@@ -176,12 +176,7 @@ const latestByMajor = await Promise.all(
             ] as const;
         }
 
-        const { name: tag } = first ?? { name: tagsBefore[distribution] as string | undefined };
-        if (!tag?.length) {
-            throw new Error(`Unable to find latest docker tag for '${distribution}'`);
-        }
-
-        return [distribution, { checksum, distribution: distributions[distribution], version, tag }] as const;
+        return [distribution, { checksum, distribution: distributions[distribution], version, tag: `${version}-alpine` }] as const;
     }),
 );
 

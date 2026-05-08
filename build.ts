@@ -23,16 +23,11 @@ const getImageTags = async () => {
     const json = await Bun.file(tagsFile).json();
 
     const node = json[distribution] as string;
-    if (typeof node !== 'string' || !node?.length || !node.includes('alpine')) {
+    if (typeof node !== 'string' || !node?.length || !node.endsWith('-alpine')) {
         throw new Error(`Invalid node tag found: '${node}' in '${JSON.stringify(json)}\n'`);
     }
 
-    const alpine = node.split('-').pop()?.split('alpine')?.pop();
-    if (typeof alpine !== 'string' || !alpine?.length || !alpine.includes('.')) {
-        throw new Error(`Invalid alpine tag found: '${alpine}' in '${JSON.stringify(json)}\n'`);
-    }
-
-    return { node, alpine };
+    return { node };
 }
 
 const getDockerfilePath = () => {
