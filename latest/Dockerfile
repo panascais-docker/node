@@ -43,7 +43,8 @@ COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=builder /usr/local/pnpm-global      /usr/local/pnpm-global
 COPY --from=builder /usr/local/share            /usr/local/share
 
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh  /usr/local/bin/
+COPY pnpm/config.yaml      /root/.config/pnpm/config.yaml
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
