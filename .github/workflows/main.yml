@@ -11,7 +11,7 @@ jobs:
     deploy:
         name: ${{ matrix.node }}
         if: "!contains(github.event.head_commit.message, '[skip ci]')"
-        runs-on: ubuntu-24.04
+        runs-on: blacksmith-4vcpu-ubuntu-2404
         timeout-minutes: 360
         strategy:
             max-parallel: 4
@@ -26,9 +26,8 @@ jobs:
               uses: docker/setup-qemu-action@v3
               id: qemu
 
-            - name: setup docker buildx
-              uses: docker/setup-buildx-action@v3
-              id: buildx
+            - name: Setup Blacksmith Builder
+              uses: useblacksmith/setup-docker-builder@v1
 
             - name: install dependencies
               id: dependencies
@@ -76,7 +75,7 @@ jobs:
     notify-ci-node:
         name: notify-ci-node
         needs: [deploy]
-        runs-on: ubuntu-24.04
+        runs-on: blacksmith-4vcpu-ubuntu-2404
         steps:
             - name: start ci-node workflow
               id: push-ci-node
