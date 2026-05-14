@@ -7,13 +7,13 @@ on:
 jobs:
     update:
         name: update
-        runs-on: blacksmith-4vcpu-ubuntu-2404
+        runs-on: blacksmith-2vcpu-ubuntu-2404
         outputs:
             main: ${{ steps.update.outputs.result }}
         steps:
             - name: pull repository
               id: repository
-              uses: actions/checkout@v4
+              uses: useblacksmith/checkout@v1
 
             - name: install bun
               id: bun
@@ -56,11 +56,11 @@ jobs:
                 node: [latest, lts, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 12]
         steps:
             - name: pull repository
-              uses: actions/checkout@v4
+              uses: useblacksmith/checkout@v1
               id: repository
 
             - name: setup docker qemu
-              uses: docker/setup-qemu-action@v3
+              uses: docker/setup-qemu-action@v4
               id: qemu
 
             - name: setup blacksmith builder
@@ -98,7 +98,7 @@ jobs:
     notify-ci-node:
         name: notify-ci-node
         needs: [deploy]
-        runs-on: blacksmith-4vcpu-ubuntu-2404
+        runs-on: blacksmith-2vcpu-ubuntu-2404
         steps:
             - name: start ci-node workflow
               id: push-ci-node
