@@ -90,7 +90,7 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
     } = Bun.env;
 
     // hack to pull first without authentication to avoid even more rate limits
-    await $`docker buildx create --use && docker buildx build \
+    await $`docker buildx build \
         --build-arg BUILD_DATE=${await $`date -u +"%Y-%m-%dT%H:%M:%SZ"`.text()} \
         --build-arg NODE_VERSION=${patch} \
         --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
@@ -123,7 +123,11 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
         -t quay.io/panascais/node:${patch} \
         ./${distribution}`;
 } else {
-    await $`docker buildx create --name orb --use &> /dev/null && docker buildx inspect --bootstrap &> /dev/null  && docker buildx install &> /dev/null || true && docker buildx build \
+    await $`docker buildx create --name orb --use &> /dev/null || docker buildx use orb`;
+    await $`docker buildx inspect --bootstrap &> /dev/null`;
+    await $`docker buildx install &> /dev/null || true`;
+
+    await $`docker buildx build \
         --build-arg BUILD_DATE=${await $`date -u +"%Y-%m-%dT%H:%M:%SZ"`.text()} \
         --build-arg NODE_VERSION=${patch} \
         --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
