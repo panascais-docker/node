@@ -63,7 +63,7 @@ jobs:
               uses: docker/setup-qemu-action@v3
               id: qemu
 
-            - name: Setup Blacksmith Builder
+            - name: setup blacksmith builder
               uses: useblacksmith/setup-docker-builder@v1
 
             - name: install dependencies
