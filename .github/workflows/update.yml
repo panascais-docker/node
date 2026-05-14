@@ -65,6 +65,8 @@ jobs:
 
             - name: setup blacksmith builder
               uses: useblacksmith/setup-docker-builder@v1
+              with:
+                  platforms: linux/amd64,linux/arm64
 
             - name: install dependencies
               id: dependencies
