@@ -51,7 +51,7 @@ jobs:
         runs-on: blacksmith-4vcpu-ubuntu-2404
         timeout-minutes: 360
         strategy:
-            max-parallel: 4
+            max-parallel: 8
             matrix:
                 node: [latest, lts, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 12]
         steps:
