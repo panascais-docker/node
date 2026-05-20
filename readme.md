@@ -80,6 +80,8 @@ This image does not cache-mount pnpm during its own build — it only downloads 
 
 Application Dockerfiles should cache installs at a **separate** path such as `/pnpm/store`, not `/root/.local/share/pnpm/store`. See [pnpm Docker docs](https://pnpm.io/docker).
 
+pnpm 11 images ship `enableGlobalVirtualStore: false` in `/root/.config/pnpm/config.yaml` so global installs (`pnpm add -g`) work with BuildKit cache mounts on the store path (see downstream `ci-node`).
+
 ## Contributors
 
 - Silas Rech [(silas@panascais.net)](mailto:silas@panascais.net)

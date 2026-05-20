@@ -1,5 +1,7 @@
 global-bin-dir: /root/.local/share/pnpm/bin
 
+enableGlobalVirtualStore: false
+
 minimumReleaseAgeExclude:
 - '@types/*'
 - '@panascais/*'
