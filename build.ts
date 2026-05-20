@@ -61,7 +61,7 @@ for (const line of dockerfile.split('\n')) {
                 break;
             }
             default: {
-                throw new Error(`Dockerfile contains more than one FROM statement`)
+                throw new Error(`Dockerfile contains unexpected FROM statement: ${line}`)
             }
         }
         continue;

@@ -17,7 +17,7 @@ ARG NODE_VERSION
 ARG VCS_REF
 
 ENV PNPM_HOME="/root/.local/share/pnpm" \
-    PATH="/root/.local/share/pnpm/bin:$PATH"
+    PATH="/usr/local/bin:/root/.local/share/pnpm/bin:$PATH"
 
 LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.label-schema.build-date=$BUILD_DATE \

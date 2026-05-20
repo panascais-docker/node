@@ -1,3 +1,5 @@
+global-bin-dir: /root/.local/share/pnpm/bin
+
 minimumReleaseAgeExclude:
 - '@types/*'
 - '@panascais/*'

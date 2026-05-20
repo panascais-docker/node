@@ -57,6 +57,12 @@ docker build \
     ./22
 ```
 
+## pnpm
+
+pnpm is installed via [get.pnpm.io](https://get.pnpm.io) into `/usr/local/bin/pnpm` (Alpine-compatible). `PNPM_HOME` is `/root/.local/share/pnpm` for optional global installs; `PATH` prefers `/usr/local/bin` so the standalone CLI is not affected by store mounts in downstream builds.
+
+Application Dockerfiles should cache installs at a **separate** path such as `/pnpm/store`, not `/root/.local/share/pnpm/store`. See [pnpm Docker docs](https://pnpm.io/docker).
+
 ## Contributors
 
 - Silas Rech [(silas@panascais.net)](mailto:silas@panascais.net)
