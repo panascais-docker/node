@@ -2,9 +2,7 @@ FROM node:21.7.3-alpine AS builder
 
 ARG TARGETARCH
 
-RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \
-    apk update --cache-dir /apk/cache \
-    && apk add --cache-dir /apk/cache --cache-predownload binutils curl
+RUN apk add --no-cache binutils curl
 RUN yes | strip /usr/local/bin/node || true \
     && yes | ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
     && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@10 \

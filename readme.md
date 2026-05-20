@@ -59,7 +59,7 @@ docker build \
 
 ## Docker cache mounts
 
-BuildKit cache mounts reuse downloaded apk packages between builds. Both the builder and packager stages mount `/apk/cache`:
+BuildKit cache mounts reuse downloaded apk packages between builds. Only the **packager** stage (`alpine:3.23`) uses them:
 
 ```dockerfile
 RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \
@@ -68,7 +68,9 @@ RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cach
     ...
 ```
 
-Alpine 3.23 ships **apk-tools 3.x**, where `--update` / `-U` means `--cache-max-age 0` (always refetch). Do not use it with cache mounts.
+The **builder** stage runs on upstream `node:X-alpine`, which may ship apk-tools 2.x (Alpine 3.22 or older). Flags like `--cache-predownload` are apk-tools 3.x only, so the builder installs its two build deps with plain `apk add --no-cache binutils curl` instead.
+
+Alpine 3.23 ships **apk-tools 3.x**, where `--update` / `-U` means `--cache-max-age 0` (always refetch). Do not use it with cache mounts on the packager stage.
 
 Cache IDs include `${TARGETARCH}` so amd64 and arm64 packages do not mix during multi-platform builds. `sharing=locked` avoids races when matrix jobs build in parallel.
 
