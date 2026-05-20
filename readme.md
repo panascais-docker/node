@@ -57,9 +57,26 @@ docker build \
     ./22
 ```
 
+## Docker cache mounts
+
+BuildKit cache mounts reuse downloaded apk packages between builds. Both the builder and packager stages mount `/apk/cache`:
+
+```dockerfile
+RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \
+    apk update --cache-dir /apk/cache \
+    && apk add --cache-dir /apk/cache --cache-predownload \
+    ...
+```
+
+Alpine 3.23 ships **apk-tools 3.x**, where `--update` / `-U` means `--cache-max-age 0` (always refetch). Do not use it with cache mounts.
+
+Cache IDs include `${TARGETARCH}` so amd64 and arm64 packages do not mix during multi-platform builds. `sharing=locked` avoids races when matrix jobs build in parallel.
+
 ## pnpm
 
 pnpm is installed via [get.pnpm.io](https://get.pnpm.io) into `/usr/local/bin/pnpm` (Alpine-compatible). `PNPM_HOME` is `/root/.local/share/pnpm` for optional global installs; `PATH` prefers `/usr/local/bin` so the standalone CLI is not affected by store mounts in downstream builds.
+
+This image does not cache-mount pnpm during its own build — it only downloads the standalone CLI (~few MB), so a store cache would add complexity for little gain.
 
 Application Dockerfiles should cache installs at a **separate** path such as `/pnpm/store`, not `/root/.local/share/pnpm/store`. See [pnpm Docker docs](https://pnpm.io/docker).
 

@@ -1,6 +1,10 @@
 FROM node:12.22.12-alpine AS builder
 
-RUN apk add --no-cache --update binutils curl
+ARG TARGETARCH
+
+RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \
+    apk update --cache-dir /apk/cache \
+    && apk add --cache-dir /apk/cache --cache-predownload binutils curl
 RUN yes | strip /usr/local/bin/node || true \
     && yes | ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
     && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@6 \
@@ -14,6 +18,7 @@ FROM alpine:3.23 AS packager
 
 ARG BUILD_DATE
 ARG NODE_VERSION
+ARG TARGETARCH
 ARG VCS_REF
 
 LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
@@ -42,9 +47,11 @@ COPY --from=builder /usr/local/share            /usr/local/share
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
-RUN addgroup -g 1000 node \
+RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \
+    apk update --cache-dir /apk/cache \
+    && addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
-    && apk add --no-cache --update ca-certificates libc6-compat libstdc++ \
+    && apk add --cache-dir /apk/cache --cache-predownload ca-certificates libc6-compat libstdc++ \
     && update-ca-certificates \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
     && ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
