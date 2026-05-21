@@ -1,4 +1,4 @@
-FROM node:26.1.0-alpine AS builder
+FROM node:26.2.0-alpine AS builder
 
 ARG TARGETARCH
 
