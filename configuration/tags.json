@@ -12,7 +12,7 @@
     "23": "23.11.1-alpine",
     "24": "24.16.0-alpine",
     "25": "25.9.0-alpine",
-    "26": "26.2.0-alpine",
-    "latest": "26.2.0-alpine",
+    "26": "26.3.0-alpine",
+    "latest": "26.3.0-alpine",
     "lts": "24.16.0-alpine"
 }
