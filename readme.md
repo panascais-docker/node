@@ -59,7 +59,7 @@ docker build \
 
 ## Docker cache mounts
 
-BuildKit cache mounts reuse downloaded apk packages between builds. Only the **packager** stage (`alpine:3.23`) uses them:
+BuildKit cache mounts reuse downloaded apk packages between builds. Only the **packager** stage (`alpine:3.24`) uses them:
 
 ```dockerfile
 RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \
