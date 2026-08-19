@@ -1,10 +1,10 @@
-global-bin-dir: /root/.local/share/pnpm/bin
+globalBinDir: /root/.local/share/pnpm/bin
 
 enableGlobalVirtualStore: false
 
 minimumReleaseAge: 2160
 
 minimumReleaseAgeExclude:
-- '@types/*'
-- '@panascais/*'
-- '@internal/*'
+    - '@types/*'
+    - '@panascais/*'
+    - '@internal/*'
