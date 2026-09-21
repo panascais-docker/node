@@ -19,8 +19,8 @@ ARG NODE_VERSION
 ARG TARGETARCH
 ARG VCS_REF
 
-ENV PNPM_HOME=~/.local/share/pnpm
-ENV PATH=${PNPM_HOME}:${PATH}
+ENV PNPM_HOME="/root/.local/share/pnpm" \
+    PATH="/usr/local/bin:/root/.local/share/pnpm/bin:$PATH"
 
 LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
     org.label-schema.build-date=$BUILD_DATE \
@@ -46,7 +46,8 @@ COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=builder /usr/local/pnpm-global      /usr/local/pnpm-global
 COPY --from=builder /usr/local/share            /usr/local/share
 
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh  /usr/local/bin/
+COPY pnpm/config.yaml      /root/.config/pnpm/config.yaml
 
 RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \
     apk update --cache-dir /apk/cache \

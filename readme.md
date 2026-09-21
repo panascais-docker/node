@@ -76,13 +76,13 @@ Cache IDs include `${TARGETARCH}` so amd64 and arm64 packages do not mix during 
 
 ## pnpm
 
-pnpm is installed via [get.pnpm.io](https://get.pnpm.io) into `/usr/local/bin/pnpm` (Alpine-compatible). `PNPM_HOME` is `/root/.local/share/pnpm` for optional global installs; `PATH` prefers `/usr/local/bin` so the standalone CLI is not affected by store mounts in downstream builds.
+Node 18+ images ship pnpm 12 via [get.pnpm.io](https://get.pnpm.io) into `/usr/local/bin/pnpm` (Alpine-compatible). All Node 18+ images set `PNPM_HOME` to `/root/.local/share/pnpm` and a `PATH` that prefers `/usr/local/bin` while including `/root/.local/share/pnpm/bin`, so the standalone CLI is not affected by store mounts in downstream builds.
 
 This image does not cache-mount pnpm during its own build — it only downloads the standalone CLI (~few MB), so a store cache would add complexity for little gain.
 
 Application Dockerfiles should cache installs at a **separate** path such as `/pnpm/store`, not `/root/.local/share/pnpm/store`. See [pnpm Docker docs](https://pnpm.io/docker).
 
-pnpm 11 images ship `enableGlobalVirtualStore: false` in `/root/.config/pnpm/config.yaml` so global installs (`pnpm add -g`) work with BuildKit cache mounts on the store path (see downstream `ci-node`).
+All Node 18+ images ship `enableGlobalVirtualStore: false` in `/root/.config/pnpm/config.yaml` so global installs (`pnpm add -g`) work with BuildKit cache mounts on the store path (see downstream `ci-node`).
 
 ## Contributors
 
