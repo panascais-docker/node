@@ -5,7 +5,7 @@ ARG TARGETARCH
 RUN apk add --no-cache binutils curl
 RUN yes | strip /usr/local/bin/node || true \
     && yes | ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
-    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@11 \
+    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@12 \
     # smoke tests
     && node --version \
     && pnpm --version \
