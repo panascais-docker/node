@@ -6,5 +6,6 @@ minimumReleaseAge: 2160
 
 minimumReleaseAgeExclude:
     - '@types/*'
+    - '@pnpm/*'
     - '@panascais/*'
     - '@internal/*'
