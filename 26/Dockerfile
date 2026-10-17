@@ -1,11 +1,15 @@
-FROM node:26.12.0-alpine AS builder
+# check=skip=InvalidDefaultArgInFrom
+ARG NODE_VERSION
 
+FROM node:${NODE_VERSION}-alpine AS builder
+
+ARG PNPM_VERSION
 ARG TARGETARCH
 
 RUN apk add --no-cache binutils curl
 RUN yes | strip /usr/local/bin/node || true \
     && yes | ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
-    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@12 \
+    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@${PNPM_VERSION} \
     # smoke tests
     && node --version \
     && pnpm --version \

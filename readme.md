@@ -40,7 +40,7 @@ docker build \
     --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
     --build-arg VCS_REF=`git rev-parse --short HEAD` \
     --build-arg NODE_VERSION=`cat ./configuration/versions.json | jq '."22"' -r` \
-    --build-arg CHECKSUM=`cat ./configuration/checksums.json | jq '."22"' -r` \
+    --build-arg PNPM_VERSION=`cat ./configuration/pnpm.json | jq '."22"' -r` \
     -t panascais/node:22 \
     ./22
 ```
@@ -52,7 +52,7 @@ docker build \
     --build-arg BUILD_DATE=(date -u +"%Y-%m-%dT%H:%M:%SZ") \
     --build-arg VCS_REF=(git rev-parse --short HEAD) \
     --build-arg NODE_VERSION=(cat ./configuration/versions.json | jq '."22"' -r) \
-    --build-arg CHECKSUM=(cat ./configuration/checksums.json | jq '."22"' -r) \
+    --build-arg PNPM_VERSION=(cat ./configuration/pnpm.json | jq '."22"' -r) \
     -t panascais/node:22 \
     ./22
 ```

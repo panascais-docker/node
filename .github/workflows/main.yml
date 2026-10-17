@@ -37,11 +37,6 @@ jobs:
               run: |
                   sudo apt install jq -y
 
-            - name: update repository
-              id: update-repository
-              run: |
-                  git pull origin master
-
             - name: install bun
               id: bun
               uses: oven-sh/setup-bun@v2
@@ -53,20 +48,6 @@ jobs:
               run: |
                   bun install
                   bun run build.ts ${{ matrix.node }}
-
-                  git config user.name 'github-actions[bot]'
-                  git config user.email 'github-actions[bot]@users.noreply.github.com'
-
-                  git add ${{ matrix.node }}/Dockerfile
-
-                  if git diff --cached --quiet; then
-                    echo "No changes in Dockerfile, skipping…"
-                  else
-                    git commit -m "Update ${{ matrix.node }} Dockerfile"
-                    git status
-                    git pull origin master --rebase
-                    git push origin master
-                  fi
               env:
                   CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
                   CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}

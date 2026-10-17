@@ -30,50 +30,9 @@ const getImageTags = async () => {
     return { node };
 }
 
-const getDockerfilePath = () => {
-    return `./${distribution}/Dockerfile`
-}
-
-const getDockerfile = async () => {
-    const dockerfile = await Bun.file(getDockerfilePath()).text();
-    return dockerfile;
-}
-
-const setDockerfile = async (dockerfile: string) => {
-    return Bun.write(getDockerfilePath(), dockerfile);
-}
-
 // business logic
 
-const [pnpm, tag, dockerfile] = await Promise.all([getPnpmVersion(), getImageTags(), getDockerfile()]);
-const lines = new Array<string>()
-
-let fromCounter = 0
-for (const line of dockerfile.split('\n')) {
-    if (line.startsWith("FROM")) {
-        switch (fromCounter++) {
-            case 0: {
-                lines.push(`FROM node:${tag.node} AS builder`);
-                break;
-            }
-            case 1: {
-                lines.push(`FROM alpine:3.24 AS packager`);
-                break;
-            }
-            default: {
-                throw new Error(`Dockerfile contains unexpected FROM statement: ${line}`)
-            }
-        }
-        continue;
-    }
-    if (line.includes('https://get.pnpm.io/v6.js')) {
-        lines.push(`    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@${pnpm} \\`);
-        continue;
-    }
-    lines.push(line);
-}
-
-await setDockerfile(lines.join('\n'));
+const [pnpm, tag] = await Promise.all([getPnpmVersion(), getImageTags()]);
 
 const [patch] = tag.node.split('-');
 const [major, min] = patch.split('.')
@@ -93,6 +52,7 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
     await $`docker buildx build \
         --build-arg BUILD_DATE=${await $`date -u +"%Y-%m-%dT%H:%M:%SZ"`.text()} \
         --build-arg NODE_VERSION=${patch} \
+        --build-arg PNPM_VERSION=${pnpm} \
         --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
         --platform linux/amd64,linux/arm64 \
         --progress=plain \
@@ -105,6 +65,7 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
     await $`docker buildx build \
         --build-arg BUILD_DATE=${await $`date -u +"%Y-%m-%dT%H:%M:%SZ"`.text()} \
         --build-arg NODE_VERSION=${patch} \
+        --build-arg PNPM_VERSION=${pnpm} \
         --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
         --push \
         --platform linux/amd64,linux/arm64 \
@@ -130,6 +91,7 @@ if (Bun.env.GITHUB_ACTIONS === 'true') {
     await $`docker buildx build \
         --build-arg BUILD_DATE=${await $`date -u +"%Y-%m-%dT%H:%M:%SZ"`.text()} \
         --build-arg NODE_VERSION=${patch} \
+        --build-arg PNPM_VERSION=${pnpm} \
         --build-arg VCS_REF=${await $`git rev-parse --short HEAD`.text()} \
         --load \
         --platform linux/arm64 \
