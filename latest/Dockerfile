@@ -1,4 +1,4 @@
-FROM node:26.10.0-alpine AS builder
+FROM node:26.12.0-alpine AS builder
 
 ARG TARGETARCH
 
@@ -53,7 +53,7 @@ RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cach
     apk update --cache-dir /apk/cache \
     && addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
-    && apk add --cache-dir /apk/cache --cache-predownload ca-certificates libc6-compat libstdc++ \
+    && apk add --cache-dir /apk/cache --cache-predownload ca-certificates libatomic libc6-compat libstdc++ \
     && update-ca-certificates \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
     && ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
