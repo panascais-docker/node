@@ -13,5 +13,5 @@
     "24": "https://nodejs.org/dist/latest-v24.x/",
     "25": "https://nodejs.org/dist/latest-v25.x/",
     "26": "https://nodejs.org/dist/latest-v26.x/",
-    "lts": "https://nodejs.org/dist/latest-v24.x/"
+    "lts": "https://nodejs.org/dist/latest-v26.x/"
 }
