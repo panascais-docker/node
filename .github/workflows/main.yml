@@ -59,7 +59,7 @@ jobs:
     notify-ci-node:
         name: notify-ci-node
         needs: [deploy]
-        runs-on: blacksmith-2vcpu-ubuntu-2404
+        runs-on: ubuntu-latest
         steps:
             - name: start ci-node workflow
               id: push-ci-node
