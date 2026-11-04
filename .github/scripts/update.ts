@@ -86,6 +86,18 @@ const hasArchitectures = (images: { architecture: string }[]) => {
     return architectures.every(architecture => hasArchitecture(images, architecture));
 };
 
+const fetchMirrorImages = async (tag: string) => {
+    const response = await fetch(`https://mirror.gcr.io/v2/library/node/manifests/${tag}`, {
+        headers: { Accept: 'application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json' },
+    });
+    if (!response.ok) {
+        return [];
+    }
+
+    const { manifests = [] } = (await response.json()) as { manifests?: { platform?: { architecture: string } }[] };
+    return manifests.map(({ platform }) => ({ architecture: platform?.architecture ?? '' }));
+};
+
 const checksumsFile = './configuration/checksums.json';
 const distributionsFile = './configuration/distributions.json';
 const pnpmFile = './configuration/pnpm.json';
@@ -154,16 +166,7 @@ const latestByMajor = await Promise.all(
             ] as const;
         }
 
-        const dockerHubUrl = `https://hub.docker.com/v2/repositories/library/node/tags/?page_size=1&name=${version}-alpine`;
-
-        const { results = [] } = await fetchJson<{ results: { name: string; images: { architecture: string }[] }[] }>(dockerHubUrl);
-        const [first = { name: '', images: [] }] = results;
-
-        if (!first) {
-            console.log({ results, distribution, base, url, dockerHubUrl });
-        }
-
-        if (!hasArchitectures(first.images)) {
+        if (!hasArchitectures(await fetchMirrorImages(`${version}-alpine`))) {
             return [
                 distribution,
                 {
