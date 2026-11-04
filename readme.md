@@ -33,33 +33,27 @@
 
 ## Build
 
-**Example for bash and node version 22:**
+Every numeric directory is a line named after its node major version. `configuration/` pins the node release, the `mirror.gcr.io` image digests and the pnpm major per line, and `aliases.json` maps `latest` and `lts` onto a line.
+
+**Build, load and smoke test node 22 for the local platform:**
 
 ```sh
-docker build \
-    --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-    --build-arg VCS_REF=`git rev-parse --short HEAD` \
-    --build-arg NODE_VERSION=`cat ./configuration/versions.json | jq '."22"' -r` \
-    --build-arg PNPM_VERSION=`cat ./configuration/pnpm.json | jq '."22"' -r` \
-    -t panascais/node:22 \
-    ./22
+go run ./scripts build 22
 ```
 
-**Example for fish and node version 22:**
+The image is tagged `ghcr.io/panascais-docker/node/node:22`, `22.x` and `22.x.x` (plus the Docker Hub and Quay names) in the local image store. `./scripts/build-all-parallel.sh [line...]` does the same for every line at once and logs each build to `$TMPDIR/node-builds`.
 
-```fish
-docker build \
-    --build-arg BUILD_DATE=(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-    --build-arg VCS_REF=(git rev-parse --short HEAD) \
-    --build-arg NODE_VERSION=(cat ./configuration/versions.json | jq '."22"' -r) \
-    --build-arg PNPM_VERSION=(cat ./configuration/pnpm.json | jq '."22"' -r) \
-    -t panascais/node:22 \
-    ./22
+**Refresh the pins from nodejs.org and `mirror.gcr.io`:**
+
+```sh
+go run ./scripts update
 ```
+
+On GitHub Actions, `plan` compares each line's fingerprint with the annotation on the published image, `build` pushes the stale lines by digest per architecture and `publish` tags them as multi-platform images.
 
 ## Docker cache mounts
 
-BuildKit cache mounts reuse downloaded apk packages between builds. Only the **packager** stage (`alpine:3.24`) uses them:
+BuildKit cache mounts reuse downloaded apk packages between builds. Only the **packager** stage (`ALPINE_IMAGE`) uses them:
 
 ```dockerfile
 RUN --mount=type=cache,id=node-apk-${TARGETARCH},sharing=locked,target=/apk/cache \

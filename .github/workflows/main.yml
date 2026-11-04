@@ -7,50 +7,118 @@ on:
         branches:
             - master
 
+concurrency:
+    group: node
+    cancel-in-progress: false
+
 jobs:
-    deploy:
-        name: ${{ matrix.node }}
+    plan:
+        name: plan
         if: "!contains(github.event.head_commit.message, '[skip ci]')"
-        runs-on: blacksmith-2vcpu-ubuntu-2404
-        timeout-minutes: 360
-        strategy:
-            fail-fast: false
-            max-parallel: 8
-            matrix:
-                node: [latest, lts, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 12]
+        runs-on: ubuntu-latest
+        outputs:
+            lines: ${{ steps.plan.outputs.lines }}
         steps:
             - name: pull repository
               uses: actions/checkout@v6
               id: repository
 
-            - name: setup docker qemu
-              uses: docker/setup-qemu-action@v4
-              id: qemu
+            - name: install go
+              id: go
+              uses: actions/setup-go@v6
               with:
-                  image: mirror.gcr.io/tonistiigi/binfmt:latest
+                  go-version-file: go.mod
+                  cache: true
+
+            - name: plan the stale lines
+              id: plan
+              run: |
+                  go run ./scripts plan ${{ github.event_name != 'push' && '--force' || '' }} >> $GITHUB_OUTPUT
+              env:
+                  CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+                  CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+
+    build:
+        name: ${{ matrix.line }} (${{ matrix.architecture }})
+        needs: [plan]
+        if: needs.plan.outputs.lines != '[]'
+        runs-on: ${{ matrix.architecture == 'arm64' && 'blacksmith-4vcpu-ubuntu-2404-arm' || 'blacksmith-2vcpu-ubuntu-2404' }}
+        timeout-minutes: 360
+        strategy:
+            fail-fast: false
+            max-parallel: 16
+            matrix:
+                line: ${{ fromJSON(needs.plan.outputs.lines) }}
+                architecture: [amd64, arm64]
+        steps:
+            - name: pull repository
+              uses: actions/checkout@v6
+              id: repository
 
             - name: setup docker builder
               uses: docker/setup-buildx-action@v4
               with:
                   driver-opts: image=mirror.gcr.io/moby/buildkit:buildx-stable-1
-                  platforms: linux/amd64,linux/arm64
 
-            - name: install dependencies
-              id: dependencies
-              run: |
-                  sudo apt install jq -y
-
-            - name: install bun
-              id: bun
-              uses: oven-sh/setup-bun@v2
+            - name: install go
+              id: go
+              uses: actions/setup-go@v6
               with:
-                  bun-version: 1.4.4
+                  go-version-file: go.mod
+                  cache: true
 
-            - name: build and push the docker container image
+            - name: build and push the docker container image by digest
               id: build
               run: |
-                  bun install
-                  bun run build.ts ${{ matrix.node }}
+                  go run ./scripts build ${{ matrix.line }}
+              env:
+                  CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+                  CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+                  DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+                  DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+                  QUAY_REGISTRY_TOKEN: ${{ secrets.QUAY_REGISTRY_TOKEN }}
+                  QUAY_REGISTRY_USERNAME: ${{ secrets.QUAY_REGISTRY_USERNAME }}
+
+            - name: upload the pushed digests
+              uses: actions/upload-artifact@v7
+              with:
+                  name: digests-${{ matrix.line }}-${{ matrix.architecture }}
+                  path: digests/
+                  if-no-files-found: error
+
+    publish:
+        name: publish
+        needs: [plan, build]
+        if: ${{ !failure() && !cancelled() && needs.plan.outputs.lines != '[]' }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: pull repository
+              uses: actions/checkout@v6
+              id: repository
+
+            - name: setup docker builder
+              uses: docker/setup-buildx-action@v4
+              with:
+                  driver-opts: image=mirror.gcr.io/moby/buildkit:buildx-stable-1
+
+            - name: install go
+              id: go
+              uses: actions/setup-go@v6
+              with:
+                  go-version-file: go.mod
+                  cache: true
+
+            - name: download the pushed digests
+              uses: actions/download-artifact@v8
+              with:
+                  pattern: digests-*
+                  path: digests/
+                  merge-multiple: true
+
+            - name: tag the multi-platform docker container images
+              id: publish
+              run: |
+                  go run ./scripts publish
               env:
                   CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
                   CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
@@ -61,10 +129,13 @@ jobs:
 
     notify-ci-node:
         name: notify-ci-node
-        needs: [deploy]
+        needs: [publish]
+        if: needs.publish.result == 'success'
         runs-on: ubuntu-latest
         steps:
             - name: start ci-node workflow
               id: push-ci-node
               run: |
-                  curl -XPOST -u "${{ secrets.PANASCAIS_CI_NODE_USERNAME}}:${{secrets.PANASCAIS_CI_NODE_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/panascais-docker/ci-node/actions/workflows/main.yml/dispatches --data '{"ref": "master"}';
+                  gh workflow run update.yml --repo panascais-docker/ci-node --ref master
+              env:
+                  GH_TOKEN: ${{ secrets.PANASCAIS_CI_NODE_TOKEN }}

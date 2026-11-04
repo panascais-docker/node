@@ -4,26 +4,42 @@ set -eu
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-VERSIONS="12 14 15 16 17 18 19 20 21 22 23 24 25 26 latest lts"
-LOG_DIR="${TMPDIR:-/tmp}node-builds"
+TEMPORARY="${TMPDIR:-/tmp}"
+LOG_DIR="${TEMPORARY%/}/node-builds"
+BINARY="${LOG_DIR}/scripts"
 mkdir -p "$LOG_DIR"
 
-echo "logs: $LOG_DIR/build-<version>.log"
+if [ "$#" -gt 0 ]; then
+  TARGETS="$*"
+else
+  TARGETS=""
+  for directory in [0-9]*/; do
+    if [ -f "${directory}Dockerfile" ]; then
+      TARGETS="${TARGETS} ${directory%/}"
+    fi
+  done
+fi
 
-for v in $VERSIONS; do
+go build -o "$BINARY" ./scripts
+
+echo "logs: ${LOG_DIR}/build-<line>.log"
+
+PIDS=""
+for line in $TARGETS; do
   (
-    if bun run build.ts "$v" >"$LOG_DIR/build-$v.log" 2>&1; then
-      echo "OK $v"
+    if "$BINARY" build "$line" >"${LOG_DIR}/build-${line}.log" 2>&1; then
+      echo "OK ${line}"
     else
-      echo "FAILURE $v (see $LOG_DIR/build-$v.log)"
+      echo "FAILURE ${line} (see ${LOG_DIR}/build-${line}.log)"
       exit 1
     fi
   ) &
+  PIDS="${PIDS} $!"
 done
 
 FAIL=0
-for v in $VERSIONS; do
-  if ! wait; then
+for pid in $PIDS; do
+  if ! wait "$pid"; then
     FAIL=1
   fi
 done

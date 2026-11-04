@@ -1,7 +1,8 @@
 # check=skip=InvalidDefaultArgInFrom
-ARG NODE_VERSION
+ARG ALPINE_IMAGE=mirror.gcr.io/library/alpine:3.24
+ARG NODE_IMAGE
 
-FROM mirror.gcr.io/library/node:${NODE_VERSION}-alpine AS builder
+FROM ${NODE_IMAGE} AS builder
 
 ARG PNPM_VERSION
 ARG TARGETARCH
@@ -16,7 +17,7 @@ RUN yes | strip /usr/local/bin/node || true \
     && which node \
     && which pnpm
 
-FROM mirror.gcr.io/library/alpine:3.24 AS packager
+FROM ${ALPINE_IMAGE} AS packager
 
 ARG BUILD_DATE
 ARG NODE_VERSION
