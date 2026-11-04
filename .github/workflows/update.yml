@@ -68,6 +68,9 @@ jobs:
               uses: docker/setup-buildx-action@v4
               with:
                   platforms: linux/amd64,linux/arm64
+                  buildkitd-config-inline: |
+                      [registry."docker.io"]
+                        mirrors = ["mirror.gcr.io"]
 
             - name: install dependencies
               id: dependencies

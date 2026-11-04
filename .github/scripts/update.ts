@@ -104,7 +104,7 @@ const [checksumsBefore, distributionsBefore, pnpmBefore, tagsBefore, versionsBef
 for (const distribution of await fetchJson<{ version: string; lts: boolean }[]>('https://nodejs.org/dist/index.json')) {
     const major = extractMajor(distribution.version);
 
-    if (!distributions.latest && !distribution.lts) {
+    if (!distributions.latest) {
         const distributionChecked = distributions[major] ?? distributionsBefore.latest;
         if (distributionChecked) {
             distributions.latest = distributionChecked;
@@ -113,7 +113,6 @@ for (const distribution of await fetchJson<{ version: string; lts: boolean }[]>(
         if (pnpmChecked) {
             pnpm.latest = pnpmChecked;
         }
-        continue;
     }
 
     if (!distributions.lts && distribution.lts) {
