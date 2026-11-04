@@ -21,7 +21,8 @@ jobs:
               id: go
               uses: actions/setup-go@v6
               with:
-                  go-version-file: go.mod
+                  go-version: stable
+                  check-latest: true
                   cache: true
 
             - name: run update script
@@ -64,7 +65,8 @@ jobs:
               id: go
               uses: actions/setup-go@v6
               with:
-                  go-version-file: go.mod
+                  go-version: stable
+                  check-latest: true
                   cache: true
 
             - name: plan the stale lines
@@ -106,7 +108,8 @@ jobs:
               id: go
               uses: actions/setup-go@v6
               with:
-                  go-version-file: go.mod
+                  go-version: stable
+                  check-latest: true
                   cache: true
 
             - name: build and push the docker container image by digest
@@ -152,7 +155,8 @@ jobs:
               id: go
               uses: actions/setup-go@v6
               with:
-                  go-version-file: go.mod
+                  go-version: stable
+                  check-latest: true
                   cache: true
 
             - name: download the pushed digests
