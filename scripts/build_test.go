@@ -31,7 +31,7 @@ func TestStaleLines(t *testing.T) {
 		lines     []string
 	}{
 		{"current", expected, false, []string{}},
-		{"force", expected, true, []string{"24", "26"}},
+		{"force", expected, true, []string{"26", "24"}},
 		{"missing", configuration{"24": "sha256:a"}, false, []string{"26"}},
 		{"stale", configuration{"24": "sha256:x", "26": "sha256:b"}, false, []string{"24"}},
 	} {
