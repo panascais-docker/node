@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -42,10 +43,16 @@ func publish() error {
 	}
 
 	errs := make([]error, len(creations))
+	slots := make(chan struct{}, 4)
 
 	var group sync.WaitGroup
 	for index, creation := range creations {
-		group.Go(func() { errs[index] = command("docker", creation...).Run() })
+		group.Go(func() {
+			slots <- struct{}{}
+			defer func() { <-slots }()
+
+			errs[index] = retryRateLimited(func() *exec.Cmd { return command("docker", creation...) })
+		})
 	}
 	group.Wait()
 

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"maps"
+	"math/rand/v2"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -184,7 +187,7 @@ func push(build build, platform string) error {
 		build.arguments(revision),
 		[]string{build.line},
 	)
-	if err := command("docker", arguments...).Run(); err != nil {
+	if err := retryRateLimited(func() *exec.Cmd { return command("docker", arguments...) }); err != nil {
 		return err
 	}
 
@@ -277,6 +280,23 @@ func command(name string, arguments ...string) *exec.Cmd {
 	process.Stdout, process.Stderr = os.Stdout, os.Stderr
 
 	return process
+}
+
+func retryRateLimited(create func() *exec.Cmd) error {
+	for attempt := 0; ; attempt++ {
+		var stderr bytes.Buffer
+		process := create()
+		process.Stderr = io.MultiWriter(process.Stderr, &stderr)
+
+		err := process.Run()
+		if err == nil || attempt == 5 || !strings.Contains(stderr.String(), "429 Too Many Requests") {
+			return err
+		}
+
+		delay := time.Duration(30<<attempt)*time.Second + rand.N(30*time.Second)
+		_, _ = fmt.Fprintf(os.Stderr, "rate limited by a registry, retrying in %s\n", delay.Round(time.Second))
+		time.Sleep(delay)
+	}
 }
 
 func output(name string, arguments ...string) (string, error) {
