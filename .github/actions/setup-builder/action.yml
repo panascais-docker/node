@@ -1,0 +1,23 @@
+name: setup docker builder
+description: Set up buildx with BuildKit pulled through mirror.gcr.io, falling back to Docker Hub when the mirror misses an image
+
+runs:
+    using: composite
+    steps:
+        - name: setup docker builder from the mirror
+          id: mirror
+          continue-on-error: true
+          uses: docker/setup-buildx-action@v4
+          with:
+              driver-opts: image=mirror.gcr.io/moby/buildkit:buildx-stable-1
+              buildkitd-config-inline: |
+                  [registry."docker.io"]
+                    mirrors = ["mirror.gcr.io"]
+
+        - name: setup docker builder from docker hub
+          if: steps.mirror.outcome == 'failure'
+          uses: docker/setup-buildx-action@v4
+          with:
+              buildkitd-config-inline: |
+                  [registry."docker.io"]
+                    mirrors = ["mirror.gcr.io"]

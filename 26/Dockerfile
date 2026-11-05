@@ -1,5 +1,5 @@
 # check=skip=InvalidDefaultArgInFrom
-ARG ALPINE_IMAGE=mirror.gcr.io/library/alpine:3.24
+ARG ALPINE_IMAGE=docker.io/library/alpine:3.24
 ARG NODE_IMAGE
 
 FROM ${NODE_IMAGE} AS builder

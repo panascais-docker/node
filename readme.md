@@ -33,7 +33,7 @@
 
 ## Build
 
-Every numeric directory is a line named after its node major version. `configuration/` pins the node release, the `mirror.gcr.io` image digests and the pnpm major per line, and `aliases.json` maps `latest` and `lts` onto a line.
+Every numeric directory is a line named after its node major version. `configuration/` pins the node release, the Docker Hub image digests and the pnpm major per line, and `aliases.json` maps `latest` and `lts` onto a line.
 
 **Build, load and smoke test node 22 for the local platform:**
 
@@ -43,13 +43,15 @@ go run ./scripts build 22
 
 The image is tagged `ghcr.io/panascais-docker/node/node:22`, `22.x` and `22.x.x` (plus the Docker Hub and Quay names) in the local image store. `./scripts/build-all-parallel.sh [line...]` does the same for every line at once and logs each build to `$TMPDIR/node-builds`.
 
-**Refresh the pins from nodejs.org and `mirror.gcr.io`:**
+**Refresh the pins from nodejs.org and Docker Hub:**
 
 ```sh
 go run ./scripts update
 ```
 
 On GitHub Actions, `plan` compares each line's fingerprint with the annotation on the published image, `build` pushes the stale lines by digest per architecture and `publish` tags them as multi-platform images.
+
+Every job pulls Docker Hub images, BuildKit included, through `mirror.gcr.io` to stay clear of Docker Hub rate limits, and falls back to Docker Hub only when the mirror has not cached an image yet.
 
 ## Docker cache mounts
 

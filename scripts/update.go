@@ -46,7 +46,7 @@ func (release release) lts() bool {
 func updateCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "update",
-		Short: "Pin the newest node release and mirrored image digest per line and refresh the aliases",
+		Short: "Pin the newest node release and image digest per line and refresh the aliases",
 		Args:  cobra.NoArgs,
 		RunE:  func(command *cobra.Command, _ []string) error { return update(command.Context()) },
 	}
@@ -95,7 +95,7 @@ func update(ctx context.Context) error {
 		}
 
 		if version == "" || digest == "" {
-			return fmt.Errorf("no mirrored node release found for line %s", line)
+			return fmt.Errorf("no published node release found for line %s", line)
 		}
 
 		after.versions[line], after.digests[line] = version, digest
@@ -106,7 +106,7 @@ func update(ctx context.Context) error {
 	for image, pinned := range before.builders {
 		name, tag, _ := strings.Cut(image, ":")
 
-		digest, err := fetchDigest(ctx, mirror+name, tag, pinned)
+		digest, err := fetchDigest(ctx, library+name, tag, pinned)
 		if err != nil {
 			return err
 		}

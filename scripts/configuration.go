@@ -20,8 +20,8 @@ const (
 	digestsFile  = "configuration/digests.json"
 	pnpmFile     = "configuration/pnpm.json"
 	versionsFile = "configuration/versions.json"
-	mirror       = "mirror.gcr.io/library/"
-	repository   = mirror + "node"
+	library      = "docker.io/library/"
+	repository   = library + "node"
 )
 
 var linePattern = regexp.MustCompile(`^\d+$`)

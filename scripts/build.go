@@ -129,7 +129,7 @@ func builderImages(builders configuration) (map[string]string, error) {
 			return nil, fmt.Errorf("invalid builder %s@%s", image, digest)
 		}
 
-		images[strings.ToUpper(name)+"_IMAGE"] = mirror + image + "@" + digest
+		images[strings.ToUpper(name)+"_IMAGE"] = library + image + "@" + digest
 	}
 
 	return images, nil
