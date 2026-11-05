@@ -47,7 +47,7 @@ jobs:
         timeout-minutes: 360
         strategy:
             fail-fast: false
-            max-parallel: 32
+            max-parallel: 8
             matrix:
                 line: ${{ fromJSON(needs.plan.outputs.lines) }}
                 architecture: [amd64, arm64]
