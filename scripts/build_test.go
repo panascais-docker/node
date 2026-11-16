@@ -14,9 +14,9 @@ func TestResolveNames(t *testing.T) {
 	}{
 		{"26", "26.13.0", "alpine", []string{
 			"26", "26.13", "26.13.0", "latest", "lts",
-			"26-alpine", "26.13-alpine", "26.13.0-alpine", "alpine", "lts-alpine",
+			"26-alpine", "26.13-alpine", "26.13.0-alpine", "alpine", "latest-alpine", "lts-alpine",
 		}},
-		{"26", "26.13.0", "debian", []string{"26-debian", "26.13-debian", "26.13.0-debian", "debian", "lts-debian"}},
+		{"26", "26.13.0", "debian", []string{"26-debian", "26.13-debian", "26.13.0-debian", "debian", "latest-debian", "lts-debian"}},
 		{"24", "24.22.2", "alpine", []string{"24", "24.22", "24.22.2", "24-alpine", "24.22-alpine", "24.22.2-alpine"}},
 		{"24", "24.22.2", "debian", []string{"24-debian", "24.22-debian", "24.22.2-debian"}},
 	} {

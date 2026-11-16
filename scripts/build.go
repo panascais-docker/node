@@ -136,7 +136,7 @@ func planBuild(line string, variant variant, pins pins) (build, error) {
 }
 
 // resolveNames lists the tags of a line's variant, canonical tag first. Every variant gets suffixed tags
-// ("latest" becomes the bare variant name) and the default variant also owns the unsuffixed ones.
+// ("latest" becomes the bare variant name and latest-<variant>) and the default variant also owns the unsuffixed ones.
 func resolveNames(line, version, variant string, aliases configuration) []string {
 	minor, _, _ := strings.Cut(strings.TrimPrefix(version, line+"."), ".")
 
@@ -154,7 +154,7 @@ func resolveNames(line, version, variant string, aliases configuration) []string
 
 	for _, base := range bases {
 		if base == "latest" {
-			names = append(names, variant)
+			names = append(names, variant, "latest-"+variant)
 		} else {
 			names = append(names, base+"-"+variant)
 		}
