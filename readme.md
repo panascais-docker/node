@@ -8,12 +8,14 @@
 
 | **Tag:** | **Command:**                     | **Node Version:** | **Supported:** | **Labels:**                                                                                            |
 | -------- | -------------------------------- | ----------------- | -------------- | ------------------------------------------------------------------------------------------------------ |
-| `lts`    | `docker pull panascais/node:lts` | `v22.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/lts?style=flat-square)    |
-| `latest` | `docker pull panascais/node`     | `v24.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/latest?style=flat-square) |
+| `lts`    | `docker pull panascais/node:lts` | `v26.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/lts?style=flat-square)    |
+| `latest` | `docker pull panascais/node`     | `v26.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/latest?style=flat-square) |
+| `26`     | `docker pull panascais/node:26`  | `v26.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/26?style=flat-square)     |
+| `25`     | `docker pull panascais/node:25`  | `v25.x.x`         | ×              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/25?style=flat-square)     |
 | `24`     | `docker pull panascais/node:24`  | `v24.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/24?style=flat-square)     |
-| `23`     | `docker pull panascais/node:23`  | `v23.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/23?style=flat-square)     |
+| `23`     | `docker pull panascais/node:23`  | `v23.x.x`         | ×              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/23?style=flat-square)     |
 | `22`     | `docker pull panascais/node:22`  | `v22.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/22?style=flat-square)     |
-| `21`     | `docker pull panascais/node:21`  | `v21.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/21?style=flat-square)     |
+| `21`     | `docker pull panascais/node:21`  | `v21.x.x`         | ×              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/21?style=flat-square)     |
 | `20`     | `docker pull panascais/node:20`  | `v20.x.x`         | ✓              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/20?style=flat-square)     |
 | `19`     | `docker pull panascais/node:19`  | `v19.x.x`         | ×              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/19?style=flat-square)     |
 | `18`     | `docker pull panascais/node:18`  | `v18.x.x`         | ×              | ![Docker Image Size](https://img.shields.io/docker/image-size/panascais/node/18?style=flat-square)     |
@@ -122,4 +124,4 @@ Interested in contributing to **Node**? Contributions are welcome, and are accep
 
 ## License
 
-Code licensed under [MIT](license.md), documentation under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+Code licensed under [MIT](license), documentation under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).

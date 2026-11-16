@@ -26,13 +26,13 @@ const (
 
 var linePattern = regexp.MustCompile(`^\d+$`)
 
-// variant is an image flavor built per line; upstream is the suffix of the node image tag it builds from.
+// variant is an image flavor built per line. upstream is the suffix of the node image tag it builds from.
 type variant struct {
 	name     string
 	upstream string
 }
 
-// variants lists the image flavors; the first one is the default and also owns the unsuffixed tags.
+// variants lists the image flavors. The first one is the default and also owns the unsuffixed tags.
 var variants = []variant{{name: "alpine", upstream: "alpine"}, {name: "debian", upstream: "slim"}}
 
 type configuration map[string]string

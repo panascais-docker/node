@@ -12,7 +12,7 @@ func main() {
 		Short:        "Build panascais/node images and update their configuration",
 		SilenceUsage: true,
 	}
-	command.AddCommand(buildCommand(), planCommand(), publishCommand(), updateCommand())
+	command.AddCommand(buildCommand(), describeCommand(), planCommand(), publishCommand(), updateCommand())
 	command.CompletionOptions.DisableDefaultCmd = true
 
 	if command.Execute() != nil {

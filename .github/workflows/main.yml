@@ -39,6 +39,31 @@ jobs:
                   CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
                   CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
 
+    describe:
+        name: describe
+        if: "!contains(github.event.head_commit.message, '[skip ci]')"
+        runs-on: ubuntu-latest
+        steps:
+            - name: pull repository
+              uses: actions/checkout@v6
+              id: repository
+
+            - name: install go
+              id: go
+              uses: actions/setup-go@v6
+              with:
+                  go-version: stable
+                  check-latest: true
+                  cache: true
+
+            - name: publish the readme as the docker hub overview
+              id: describe
+              run: |
+                  go run ./scripts describe
+              env:
+                  DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+                  DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+
     build:
         name: ${{ matrix.target }} (${{ matrix.architecture }})
         needs: [plan]
