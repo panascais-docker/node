@@ -19,6 +19,7 @@ func lineFingerprint(build build) (string, error) {
 		"image":   build.image,
 		"names":   strings.Join(build.names, " "),
 		"pnpm":    build.pnpm,
+		"variant": build.variant.name,
 		"version": build.version,
 	}
 	maps.Copy(values, build.builders)
@@ -26,6 +27,10 @@ func lineFingerprint(build build) (string, error) {
 	err := filepath.WalkDir(build.line, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil || entry.IsDir() {
 			return err
+		}
+
+		if strings.HasPrefix(entry.Name(), "Dockerfile.") && entry.Name() != "Dockerfile."+build.variant.name {
+			return nil
 		}
 
 		content, err := os.ReadFile(path)

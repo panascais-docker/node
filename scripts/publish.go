@@ -14,7 +14,7 @@ import (
 func publishCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "publish",
-		Short: "Tag the pushed amd64 and arm64 digests of every built line as multi-platform images",
+		Short: "Tag the pushed amd64 and arm64 digests of every built target as multi-platform images",
 		Args:  cobra.NoArgs,
 		RunE:  func(_ *cobra.Command, _ []string) error { return publish() },
 	}
@@ -67,7 +67,14 @@ func readPushed() (map[string]configuration, error) {
 
 	pushed := map[string]configuration{}
 	for _, file := range files {
-		line, architecture, _ := strings.Cut(strings.TrimSuffix(filepath.Base(file), ".json"), "-")
+		name := strings.TrimSuffix(filepath.Base(file), ".json")
+
+		separator := strings.LastIndex(name, "-")
+		if separator < 0 {
+			return nil, fmt.Errorf("no architecture in %s", file)
+		}
+
+		key, architecture := name[:separator], name[separator+1:]
 
 		value, err := readConfiguration(file)
 		if err != nil {
@@ -78,7 +85,7 @@ func readPushed() (map[string]configuration, error) {
 			pushed[architecture] = configuration{}
 		}
 
-		pushed[architecture][line] = value[line]
+		pushed[architecture][key] = value[key]
 	}
 
 	return pushed, nil
@@ -87,8 +94,8 @@ func readPushed() (map[string]configuration, error) {
 func planManifests(pushed map[string]configuration, pins pins) ([][]string, error) {
 	built := map[string]bool{}
 	for _, architecture := range architectures {
-		for line := range pushed[architecture] {
-			built[line] = true
+		for key := range pushed[architecture] {
+			built[key] = true
 		}
 	}
 
@@ -97,17 +104,22 @@ func planManifests(pushed map[string]configuration, pins pins) ([][]string, erro
 	}
 
 	var creations [][]string
-	for _, line := range sortedKeys(built) {
-		build, err := planBuild(line, pins)
+	for _, key := range sortedKeys(built) {
+		line, variant, err := parseTarget(key)
+		if err != nil {
+			return nil, err
+		}
+
+		build, err := planBuild(line, variant, pins)
 		if err != nil {
 			return nil, err
 		}
 
 		var manifests []string
 		for _, architecture := range architectures {
-			digest := pushed[architecture][line]
+			digest := pushed[architecture][key]
 			if digest == "" {
-				return nil, fmt.Errorf("no pushed %s digest for %s", architecture, line)
+				return nil, fmt.Errorf("no pushed %s digest for %s", architecture, key)
 			}
 
 			manifests = append(manifests, digest)

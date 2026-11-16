@@ -14,23 +14,25 @@ if [ "$#" -gt 0 ]; then
 else
   TARGETS=""
   for directory in [0-9]*/; do
-    if [ -f "${directory}Dockerfile" ]; then
-      TARGETS="${TARGETS} ${directory%/}"
-    fi
+    for variant in alpine debian; do
+      if [ -f "${directory}Dockerfile.${variant}" ]; then
+        TARGETS="${TARGETS} ${directory%/}-${variant}"
+      fi
+    done
   done
 fi
 
 go build -o "$BINARY" ./scripts
 
-echo "logs: ${LOG_DIR}/build-<line>.log"
+echo "logs: ${LOG_DIR}/build-<target>.log"
 
 PIDS=""
-for line in $TARGETS; do
+for target in $TARGETS; do
   (
-    if "$BINARY" build "$line" >"${LOG_DIR}/build-${line}.log" 2>&1; then
-      echo "OK ${line}"
+    if "$BINARY" build "$target" >"${LOG_DIR}/build-${target}.log" 2>&1; then
+      echo "OK ${target}"
     else
-      echo "FAILURE ${line} (see ${LOG_DIR}/build-${line}.log)"
+      echo "FAILURE ${target} (see ${LOG_DIR}/build-${target}.log)"
       exit 1
     fi
   ) &

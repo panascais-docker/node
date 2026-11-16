@@ -22,11 +22,11 @@ func planCommand() *cobra.Command {
 
 	command := &cobra.Command{
 		Use:   "plan",
-		Short: "Print the lines whose published images are stale as a JSON array in GitHub Actions output format",
+		Short: "Print the <line>-<variant> targets whose published images are stale as a JSON array in GitHub Actions output format",
 		Args:  cobra.NoArgs,
 		RunE:  func(command *cobra.Command, _ []string) error { return plan(command.Context(), force) },
 	}
-	command.Flags().BoolVar(&force, "force", false, "treat every line as stale without reading the registry")
+	command.Flags().BoolVar(&force, "force", false, "treat every target as stale without reading the registry")
 
 	return command
 }
@@ -35,48 +35,51 @@ func plan(ctx context.Context, force bool) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 
-	expected, err := expectedFingerprints()
+	builds, err := plannedBuilds()
 	if err != nil {
 		return err
 	}
 
-	published := configuration{}
-	if !force {
-		if os.Getenv("GITHUB_ACTIONS") == "true" {
-			if err := registries[0].login(); err != nil {
-				return err
-			}
-		}
-
-		for _, line := range sortedKeys(expected) {
-			image := registries[0].image + ":" + line
-
-			fingerprint, err := publishedFingerprint(ctx, image)
-			if missing(err) {
-				_, _ = fmt.Fprintf(os.Stderr, "%s is missing\n", image)
-
-				continue
-			}
-
-			if err != nil {
-				return err
-			}
-
-			published[line] = fingerprint
+	if !force && os.Getenv("GITHUB_ACTIONS") == "true" {
+		if err := registries[0].login(); err != nil {
+			return err
 		}
 	}
 
-	lines, err := json.Marshal(staleLines(expected, published, force))
+	expected, published := configuration{}, configuration{}
+	for _, build := range builds {
+		expected[build.key()] = build.fingerprint
+		if force {
+			continue
+		}
+
+		image := registries[0].image + ":" + build.names[0]
+
+		fingerprint, err := publishedFingerprint(ctx, image)
+		if missing(err) {
+			_, _ = fmt.Fprintf(os.Stderr, "%s is missing\n", image)
+
+			continue
+		}
+
+		if err != nil {
+			return err
+		}
+
+		published[build.key()] = fingerprint
+	}
+
+	targets, err := json.Marshal(staleTargets(expected, published, force))
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("lines=" + string(lines))
+	fmt.Println("targets=" + string(targets))
 
 	return nil
 }
 
-func expectedFingerprints() (configuration, error) {
+func plannedBuilds() ([]build, error) {
 	lines, err := readLines()
 	if err != nil {
 		return nil, err
@@ -87,17 +90,19 @@ func expectedFingerprints() (configuration, error) {
 		return nil, err
 	}
 
-	expected := configuration{}
+	var builds []build
 	for _, line := range lines {
-		build, err := planBuild(line, pins)
-		if err != nil {
-			return nil, err
-		}
+		for _, variant := range variants {
+			build, err := planBuild(line, variant, pins)
+			if err != nil {
+				return nil, err
+			}
 
-		expected[line] = build.fingerprint
+			builds = append(builds, build)
+		}
 	}
 
-	return expected, nil
+	return builds, nil
 }
 
 func publishedFingerprint(ctx context.Context, image string) (string, error) {
@@ -125,13 +130,13 @@ func missing(err error) bool {
 	})
 }
 
-func staleLines(expected, published configuration, force bool) []string {
-	lines := []string{}
-	for _, line := range slices.Backward(sortedKeys(expected)) {
-		if force || expected[line] != published[line] {
-			lines = append(lines, line)
+func staleTargets(expected, published configuration, force bool) []string {
+	targets := []string{}
+	for _, target := range slices.Backward(sortedKeys(expected)) {
+		if force || expected[target] != published[target] {
+			targets = append(targets, target)
 		}
 	}
 
-	return lines
+	return targets
 }

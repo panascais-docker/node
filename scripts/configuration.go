@@ -26,6 +26,15 @@ const (
 
 var linePattern = regexp.MustCompile(`^\d+$`)
 
+// variant is an image flavor built per line; upstream is the suffix of the node image tag it builds from.
+type variant struct {
+	name     string
+	upstream string
+}
+
+// variants lists the image flavors; the first one is the default and also owns the unsuffixed tags.
+var variants = []variant{{name: "alpine", upstream: "alpine"}, {name: "debian", upstream: "slim"}}
+
 type configuration map[string]string
 
 type pins struct {
@@ -122,7 +131,7 @@ func readLines() ([]string, error) {
 			continue
 		}
 
-		if _, err := os.Stat(filepath.Join(entry.Name(), "Dockerfile")); err == nil {
+		if _, err := os.Stat(filepath.Join(entry.Name(), "Dockerfile."+variants[0].name)); err == nil {
 			lines = append(lines, entry.Name())
 		}
 	}
@@ -141,8 +150,10 @@ func compareKeys(left, right string) int {
 }
 
 func keyNumbers(key string) []int {
+	prefix, _, _ := strings.Cut(key, "-")
+
 	var numbers []int
-	for part := range strings.SplitSeq(key, ".") {
+	for part := range strings.SplitSeq(prefix, ".") {
 		number, err := strconv.Atoi(part)
 		if err != nil {
 			return nil

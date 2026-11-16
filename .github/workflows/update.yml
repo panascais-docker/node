@@ -50,7 +50,7 @@ jobs:
         needs: [update]
         runs-on: ubuntu-latest
         outputs:
-            lines: ${{ steps.plan.outputs.lines }}
+            targets: ${{ steps.plan.outputs.targets }}
         steps:
             - name: pull repository
               uses: actions/checkout@v6
@@ -69,7 +69,7 @@ jobs:
                   check-latest: true
                   cache: true
 
-            - name: plan the stale lines
+            - name: plan the stale targets
               id: plan
               run: |
                   go run ./scripts plan >> $GITHUB_OUTPUT
@@ -78,16 +78,16 @@ jobs:
                   CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
 
     build:
-        name: ${{ matrix.line }} (${{ matrix.architecture }})
+        name: ${{ matrix.target }} (${{ matrix.architecture }})
         needs: [plan]
-        if: needs.plan.outputs.lines != '[]'
+        if: needs.plan.outputs.targets != '[]'
         runs-on: ${{ matrix.architecture == 'arm64' && 'blacksmith-4vcpu-ubuntu-2404-arm' || 'blacksmith-2vcpu-ubuntu-2404' }}
         timeout-minutes: 360
         strategy:
             fail-fast: false
             max-parallel: 8
             matrix:
-                line: ${{ fromJSON(needs.plan.outputs.lines) }}
+                target: ${{ fromJSON(needs.plan.outputs.targets) }}
                 architecture: [amd64, arm64]
         steps:
             - name: pull repository
@@ -113,7 +113,7 @@ jobs:
             - name: build and push the docker container image by digest
               id: build
               run: |
-                  go run ./scripts build ${{ matrix.line }}
+                  go run ./scripts build ${{ matrix.target }}
               env:
                   CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
                   CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
@@ -125,14 +125,14 @@ jobs:
             - name: upload the pushed digests
               uses: actions/upload-artifact@v7
               with:
-                  name: digests-${{ matrix.line }}-${{ matrix.architecture }}
+                  name: digests-${{ matrix.target }}-${{ matrix.architecture }}
                   path: digests/
                   if-no-files-found: error
 
     publish:
         name: publish
         needs: [plan, build]
-        if: ${{ !failure() && !cancelled() && needs.plan.outputs.lines != '[]' }}
+        if: ${{ !failure() && !cancelled() && needs.plan.outputs.targets != '[]' }}
         runs-on: ubuntu-latest
         steps:
             - name: pull repository

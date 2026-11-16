@@ -46,7 +46,7 @@ func (release release) lts() bool {
 func updateCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "update",
-		Short: "Pin the newest node release and image digest per line and refresh the aliases",
+		Short: "Pin the newest node release per line and its image digest per variant and refresh the aliases",
 		Args:  cobra.NoArgs,
 		RunE:  func(command *cobra.Command, _ []string) error { return update(command.Context()) },
 	}
@@ -77,28 +77,28 @@ func update(ctx context.Context) error {
 			return fmt.Errorf("no pnpm version for line %s in %s", line, pnpmFile)
 		}
 
-		version, digest := before.versions[line], before.digests[line]
-		if candidate := newestRelease(releases, line); candidate != "" {
-			pinned := ""
-			if candidate == version {
-				pinned = digest
-			}
+		version, digests := before.versions[line], configuration{}
+		for _, variant := range variants {
+			digests[line+"-"+variant.name] = before.digests[line+"-"+variant.name]
+		}
 
-			resolved, err := fetchDigest(ctx, repository, candidate+"-alpine", pinned)
+		if candidate := newestRelease(releases, line); candidate != "" {
+			resolved, err := fetchVariantDigests(ctx, line, candidate, version, before.digests)
 			if err != nil {
 				return err
 			}
 
-			if resolved != "" {
-				version, digest = candidate, resolved
+			if resolved != nil {
+				version, digests = candidate, resolved
 			}
 		}
 
-		if version == "" || digest == "" {
+		if version == "" || slices.Contains(slices.Collect(maps.Values(digests)), "") {
 			return fmt.Errorf("no published node release found for line %s", line)
 		}
 
-		after.versions[line], after.digests[line] = version, digest
+		after.versions[line] = version
+		maps.Copy(after.digests, digests)
 	}
 
 	maps.Copy(after.aliases, resolveAliases(releases, after.versions))
@@ -168,6 +168,26 @@ func resolveAliases(releases []release, versions configuration) configuration {
 	}
 
 	return aliases
+}
+
+// fetchVariantDigests resolves a release's image digest for every variant, or nil while one is unpublished.
+func fetchVariantDigests(ctx context.Context, line, candidate, version string, digests configuration) (configuration, error) {
+	resolved := configuration{}
+	for _, variant := range variants {
+		key, pinned := line+"-"+variant.name, ""
+		if candidate == version {
+			pinned = digests[key]
+		}
+
+		digest, err := fetchDigest(ctx, repository, candidate+"-"+variant.upstream, pinned)
+		if err != nil || digest == "" {
+			return nil, err
+		}
+
+		resolved[key] = digest
+	}
+
+	return resolved, nil
 }
 
 func fetchDigest(ctx context.Context, image, tag, pinned string) (string, error) {

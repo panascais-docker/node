@@ -1,0 +1,81 @@
+# check=skip=InvalidDefaultArgInFrom
+ARG DEBIAN_IMAGE=docker.io/library/debian:trixie-slim
+ARG NODE_IMAGE
+
+FROM ${NODE_IMAGE} AS node
+
+FROM ${DEBIAN_IMAGE} AS builder
+
+ARG PNPM_VERSION
+ARG TARGETARCH
+
+COPY --from=node /usr/local /usr/local
+
+RUN --mount=type=cache,id=node-apt-cache-${TARGETARCH},sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=node-apt-lists-${TARGETARCH},sharing=locked,target=/var/lib/apt/lists \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends binutils ca-certificates curl libatomic1
+RUN yes | strip /usr/local/bin/node || true \
+    && yes | ln -s /usr/local/bin/node /usr/local/bin/nodejs || true \
+    && yes | curl -fsSL https://get.pnpm.io/v6.js | node - add --global pnpm@${PNPM_VERSION} \
+    # smoke tests
+    && node --version \
+    && pnpm --version \
+    && command -v node \
+    && command -v pnpm
+
+FROM ${DEBIAN_IMAGE} AS packager
+
+ARG TARGETARCH
+
+COPY --from=builder /usr/local/bin/node         /usr/local/bin/node
+COPY --from=builder /usr/local/bin/pnpm         /usr/local/bin/pnpm
+COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=builder /usr/local/pnpm-global      /usr/local/pnpm-global
+COPY --from=builder /usr/local/share            /usr/local/share
+
+COPY docker-entrypoint.sh /usr/local/bin/
+
+# docker-clean is set aside only while the cache mounts are in use, so downstream images keep the stock apt behavior
+RUN --mount=type=cache,id=node-apt-cache-${TARGETARCH},sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=node-apt-lists-${TARGETARCH},sharing=locked,target=/var/lib/apt/lists \
+    mv /etc/apt/apt.conf.d/docker-clean /etc/apt/docker-clean \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libatomic1 libstdc++6 \
+    && mv /etc/apt/docker-clean /etc/apt/apt.conf.d/docker-clean \
+    && groupadd --gid 1000 node \
+    && useradd --uid 1000 --gid node --shell /bin/bash --create-home node \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+    && ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    # smoke tests
+    && node --version \
+    && pnpm --version \
+    && command -v node \
+    && command -v pnpm
+
+ARG BUILD_DATE
+ARG NODE_VERSION
+ARG VCS_REF
+
+LABEL org.label-schema.vcs-url="https://github.com/panascais-docker/node.git" \
+    org.label-schema.build-date=$BUILD_DATE \
+    org.label-schema.vcs-ref=$VCS_REF \
+    org.label-schema.name="Node Image" \
+    org.label-schema.description="Panascais Node Image" \
+    org.label-schema.vendor="Panascais ehf." \
+    org.label-schema.schema-version="1.0.0" \
+    org.opencontainers.image.revision=$VCS_REF \
+    org.opencontainers.image.version=$NODE_VERSION \
+    org.opencontainers.image.title="Node Image" \
+    org.opencontainers.image.description="Panascais Node Image" \
+    org.opencontainers.image.url=https://nodejs.org \
+    org.opencontainers.image.documentation="https://github.com/panascais-docker/node" \
+    org.opencontainers.image.vendor="Panascais ehf." \
+    org.opencontainers.image.licenses=MIT \
+    org.opencontainers.image.source="https://github.com/panascais-docker/node" \
+    maintainer="Panascais Open Source <oss@panascais.net>"
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD [ "node" ]
